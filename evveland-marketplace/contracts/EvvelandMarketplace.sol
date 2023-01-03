@@ -15,7 +15,6 @@ contract EvvelandMarketplace is ERC721, ERC721Enumerable, ERC721URIStorage, Paus
     Counters.Counter private _itemsSold;
  
     uint256 listingPrice = 0.05 ether;
-    address payable owner;
     
     mapping(uint256 => MarketItem) private idToMarketItem;
     

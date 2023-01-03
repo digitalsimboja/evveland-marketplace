@@ -10,7 +10,7 @@ import {
   marketplaceAddress
 } from '../config'
 
-import NFTMarketplace from '../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json'
+import EvvelandMarketplace from '../artifacts/contracts/EvvelandMarketplace.sol/EvvelandMarketplace.json'
 
 export default function CreateItem() {
   const [fileUrl, setFileUrl] = useState(null)
@@ -58,7 +58,7 @@ export default function CreateItem() {
 
     /* next, create the item */
     const price = ethers.utils.parseUnits(formInput.price, 'ether')
-    let contract = new ethers.Contract(marketplaceAddress, NFTMarketplace.abi, signer)
+    let contract = new ethers.Contract(marketplaceAddress, EvvelandMarketplace.abi, signer)
     let listingPrice = await contract.getListingPrice()
     listingPrice = listingPrice.toString()
     let transaction = await contract.createToken(url, price, { value: listingPrice })

@@ -6,8 +6,8 @@ import Web3Modal from 'web3modal'
 import {
   marketplaceAddress
 } from '../config'
-
-import NFTMarketplace from '../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json'
+console.log(marketplaceAddress)
+import EvvelandMarketplace from '../artifacts/contracts/EvvelandMarketplace.sol/EvvelandMarketplace.json'
 
 export default function Home() {
   const [nfts, setNfts] = useState([])
@@ -18,7 +18,7 @@ export default function Home() {
   async function loadNFTs() {
     /* create a generic provider and query for unsold market items */
     const provider = new ethers.providers.JsonRpcProvider()
-    const contract = new ethers.Contract(marketplaceAddress, NFTMarketplace.abi, provider)
+    const contract = new ethers.Contract(marketplaceAddress, EvvelandMarketplace.abi, provider)
     const data = await contract.fetchMarketItems()
 
     /*
@@ -84,5 +84,6 @@ export default function Home() {
         </div>
       </div>
     </div>
+ 
   )
 }
