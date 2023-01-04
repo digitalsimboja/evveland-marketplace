@@ -20,6 +20,9 @@ function MyApp({ Component, pageProps }) {
             <a  href="/dashboard" className="mr-6 text-pink-500">
               Dashboard
             </a>
+            <a  href="/dashboard" className="mr-6 text-pink-500">
+              Rewards Program
+            </a>
         </div>
       </nav>
       <Component {...pageProps} />

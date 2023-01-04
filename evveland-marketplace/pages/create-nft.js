@@ -3,6 +3,34 @@ import { ethers } from 'ethers'
 import { create as ipfsHttpClient } from 'ipfs-http-client'
 import { useRouter } from 'next/router'
 import Web3Modal from 'web3modal'
+import { IPFSHTTPClient } from 'ipfs-http-client'
+// const projectId = '1qmt...XXX';   // <---------- your Infura Project ID
+
+// const projectSecret = 'c920...XXX';  // <---------- your Infura Secret
+// // (for security concerns, consider saving these values in .env files)
+
+// const auth = 'Basic ' + Buffer.from(projectId + ':' + projectSecret).toString('base64');
+
+// const client = IPFSHTTPClient.create({
+//   host: 'ipfs.infura.io',
+//   port: 5001,
+//   protocol: 'https',
+//   path: 'api/v0',
+//   headers: {
+//     authorization: auth,
+//   },
+// }
+// )
+
+// // const client = ipfsClient.create({
+// //     host: 'ipfs.infura.io',
+// //     port: 5001,
+// //     protocol: 'https',
+// //     headers: {
+// //         authorization: auth,
+// //     },
+// // });
+
 
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0')
 
@@ -30,7 +58,7 @@ export default function CreateItem() {
       setFileUrl(url)
     } catch (error) {
       console.log('Error uploading file: ', error)
-    }  
+    }
   }
   async function uploadToIPFS() {
     const { name, description, price } = formInput
@@ -46,7 +74,7 @@ export default function CreateItem() {
       return url
     } catch (error) {
       console.log('Error uploading file: ', error)
-    }  
+    }
   }
 
   async function listNFTForSale() {
@@ -63,14 +91,14 @@ export default function CreateItem() {
     listingPrice = listingPrice.toString()
     let transaction = await contract.createToken(url, price, { value: listingPrice })
     await transaction.wait()
-   
+
     router.push('/')
   }
 
   return (
     <div className="flex justify-center">
       <div className="w-1/2 flex flex-col pb-12">
-        <input 
+        <input
           placeholder="Asset Name"
           className="mt-8 border rounded p-4"
           onChange={e => updateFormInput({ ...formInput, name: e.target.value })}
