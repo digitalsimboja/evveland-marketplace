@@ -27,7 +27,7 @@ export default function MyAssets() {
     const signer = provider.getSigner()
 
     const marketplaceContract = new ethers.Contract(marketplaceAddress, EvvelandMarketplace.abi, signer)
-    const data = await marketplaceContract.fetchMyNFTs()
+    const data = await marketplaceContract.fetchUserNFTs()
 
     const items = await Promise.all(data.map(async i => {
       const tokenURI = await marketplaceContract.tokenURI(i.tokenId)

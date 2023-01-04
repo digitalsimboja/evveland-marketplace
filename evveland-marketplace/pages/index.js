@@ -15,6 +15,7 @@ export default function Home() {
   useEffect(() => {
     loadNFTs()
   }, [])
+
   async function loadNFTs() {
     /* create a generic provider and query for unsold market items */
     const provider = new ethers.providers.JsonRpcProvider()
@@ -41,7 +42,7 @@ export default function Home() {
       return item
     }))
     setNfts(items)
-    setLoadingState('loaded') 
+    setLoadingState('loaded')
   }
   async function buyNft(nft) {
     /* needs the user to sign the transaction, so will use Web3Provider and sign it */
@@ -52,7 +53,7 @@ export default function Home() {
     const contract = new ethers.Contract(marketplaceAddress, NFTMarketplace.abi, signer)
 
     /* user will be prompted to pay the asking proces to complete the transaction */
-    const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')   
+    const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')
     const transaction = await contract.createMarketSale(nft.tokenId, {
       value: price
     })
@@ -84,6 +85,6 @@ export default function Home() {
         </div>
       </div>
     </div>
- 
+
   )
 }

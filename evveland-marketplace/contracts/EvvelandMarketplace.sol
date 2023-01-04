@@ -124,7 +124,7 @@ contract EvvelandMarketplace is ERC721, ERC721Enumerable, ERC721URIStorage, Paus
         return items;
     }
 
-    /** Returns onlly the NFTs purchased by a user */
+    /** Returns only the NFTs purchased by a user */
     function fetchUserNFTs() public view returns (MarketItem[] memory) {
         uint256 totalItemCount = _tokenIds.current();
         uint256 itemCount = 0;
@@ -221,4 +221,10 @@ contract EvvelandMarketplace is ERC721, ERC721Enumerable, ERC721URIStorage, Paus
     {
         return super.supportsInterface(interfaceId);
     }
+
+    function withdraw(address _addr) external onlyOwner {
+        uint256 balance = address(this).balance;
+        payable(_addr).transfer(balance);
+    }
 }
+
