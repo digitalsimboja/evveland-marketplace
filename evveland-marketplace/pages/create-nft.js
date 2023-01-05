@@ -3,36 +3,11 @@ import { ethers } from 'ethers'
 import { create as ipfsHttpClient } from 'ipfs-http-client'
 import { useRouter } from 'next/router'
 import Web3Modal from 'web3modal'
-import { IPFSHTTPClient } from 'ipfs-http-client'
-// const projectId = '1qmt...XXX';   // <---------- your Infura Project ID
-
-// const projectSecret = 'c920...XXX';  // <---------- your Infura Secret
-// // (for security concerns, consider saving these values in .env files)
-
-// const auth = 'Basic ' + Buffer.from(projectId + ':' + projectSecret).toString('base64');
-
-// const client = IPFSHTTPClient.create({
-//   host: 'ipfs.infura.io',
-//   port: 5001,
-//   protocol: 'https',
-//   path: 'api/v0',
-//   headers: {
-//     authorization: auth,
-//   },
-// }
-// )
-
-// // const client = ipfsClient.create({
-// //     host: 'ipfs.infura.io',
-// //     port: 5001,
-// //     protocol: 'https',
-// //     headers: {
-// //         authorization: auth,
-// //     },
-// // });
-
 
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0')
+
+// const client = ipfsHttpClient('http://127.0.0.1:5001/ipfs/bafybeiednzu62vskme5wpoj4bjjikeg3xovfpp4t7vxk5ty2jxdi4mv4bu')
+
 
 import {
   marketplaceAddress
