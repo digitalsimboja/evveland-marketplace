@@ -1,10 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
@@ -28,7 +25,7 @@ contract EvvelandMarketplace is ERC721URIStorage, Ownable {
 
     struct MarketItem {
         uint256 tokenId;
-        address payable creator;
+        address payable owner;
         uint256 price;
         bool isListed;
     }
@@ -36,7 +33,21 @@ contract EvvelandMarketplace is ERC721URIStorage, Ownable {
     event MarketItemCreated(
         uint256 indexed tokenId,
         uint256 price,
-        address creator,
+        address owner,
+        bool isListed
+    );
+
+    event MarketItemPurchased(
+        uint256 indexed tokenId,
+        uint256 price,
+        address buyer,
+        bool isListed
+    );
+
+    event MarketItemListed(
+        uint256 indexed tokenId,
+        uint256 price,
+        address owner,
         bool isListed
     );
 
@@ -70,10 +81,6 @@ contract EvvelandMarketplace is ERC721URIStorage, Ownable {
         return _usedTokenURI[_uri] == true;
     }
 
-    function getTotalMarketItems() public view returns (uint256) {
-        return _totalMarketItems.length;
-    }
-
     function totalSupply() public view returns (uint256) {
         return _totalMarketItems.length;
     }
@@ -81,11 +88,6 @@ contract EvvelandMarketplace is ERC721URIStorage, Ownable {
     function tokenByIndex(uint256 index) public view returns (uint256) {
         require(index < totalSupply(), "Index out of bounds");
         return _totalMarketItems[index];
-    }
-
-    function getTokenByIndex(uint256 _index) public view returns (uint256) {
-        require(_index < totalSupply(), "Index out of bounds");
-        return _totalMarketItems[_index];
     }
 
     function getTokenOfOwnerByIndex(address owner, uint256 index)
@@ -144,6 +146,7 @@ contract EvvelandMarketplace is ERC721URIStorage, Ownable {
             "Listing Fee supplied must be equal to listing price"
         );
         _tokenIds.increment();
+        _listedItems.increment();
 
         uint256 newTokenId = _tokenIds.current();
 
@@ -151,9 +154,6 @@ contract EvvelandMarketplace is ERC721URIStorage, Ownable {
         _setTokenURI(newTokenId, _uri);
         _mintMarketItem(newTokenId, price);
         _usedTokenURI[_uri] = true;
-        _totalMarketItems.push(newTokenId);
-
-        _listedItems.increment();
 
         return newTokenId;
     }
@@ -169,6 +169,45 @@ contract EvvelandMarketplace is ERC721URIStorage, Ownable {
         );
 
         emit MarketItemCreated(tokenId, price, msg.sender, true);
+    }
+
+    function buyNFT(uint256 tokenId) public payable {
+        uint256 price = _tokenIdToMarketItem[tokenId].price;
+        address owner = ERC721.ownerOf(tokenId);
+
+        require(msg.sender != owner, "You already own this NFT");
+        require(msg.value == price, "Please submit the asking price");
+
+        _tokenIdToMarketItem[tokenId].isListed = false;
+
+        _listedItems.decrement();
+
+        _transfer(owner, msg.sender, tokenId);
+        payable(owner).transfer(msg.value);
+
+        _tokenIdToMarketItem[tokenId].owner = payable(msg.sender);
+
+        emit MarketItemPurchased(tokenId, price, msg.sender, false);
+    }
+
+    function placeNFTonSale(uint256 tokenId, uint256 newPrice) public payable {
+        require(
+            ERC721.ownerOf(tokenId) == msg.sender,
+            "You are not owner of this NFT"
+        );
+        require(
+            _tokenIdToMarketItem[tokenId].isListed == false,
+            "Item is already on sale"
+        );
+        require(
+            msg.value == listingPrice,
+            "Listing fee paid must be equal to listing price"
+        );
+        _tokenIdToMarketItem[tokenId].isListed = true;
+        _tokenIdToMarketItem[tokenId].price = newPrice;
+        _listedItems.increment();
+
+        emit MarketItemListed(tokenId, newPrice, msg.sender, true);
     }
 
     // The following functions are overrides required by Solidity.
@@ -232,4 +271,15 @@ contract EvvelandMarketplace is ERC721URIStorage, Ownable {
         delete _tokenIdToNFTIndex[tokenId];
         _totalMarketItems.pop();
     }
+
+    function withdraw(address _addr) external onlyOwner {
+        uint256 balance = address(this).balance;
+        payable(_addr).transfer(balance);
+    }
+
+    // Function to receive Ether. msg.data must be empty
+    receive() external payable {}
+
+    // Fallback function is called when msg.data is not empty
+    fallback() external payable {}
 }
