@@ -1,53 +1,57 @@
-/** martketplace-test.js */
-const { expect } = require("chai");
-const hre = require("hardhat")
-require('regenerator-runtime/runtime');
+const { expect, assert } = require('chai');
 
-describe("EvvelandMarketPlace", function () {
-    it("Should create and execute market sales", async function () {
-        /** deploy the marketplace contract */
-        const EvvelandMarketplace = await hre.ethers.getContractFactory('EvvelandMarketplace')
-        const marketplace = await EvvelandMarketplace.deploy()
+const DECIMALS = '18'
+const LISTING_PRICE = '25000000000000000'
 
-        await marketplace.deployed()
+describe('Evveland Marketplace: Create Market Item and List Token', function () {
+  const uri1 = "https://evvelandmarketplace.com/item1";
+  const uri2 = "https://evvelandmarketplace.com/item2";
+  const uri3 = "https://evvelandmarketplace.com/item3";
+  const uri4 = "https://evvelandmarketplace.com/item4";
 
-        console.log('Deployed marketplace address: ', marketplace.address)
+  let _nftPrice = ethers.utils.parseEther("0.3").toString();
+  let _listingPrice = ethers.utils.parseEther("0.025").toString();
 
-        let listingPrice = await marketplace.getListingPrice()
-        listingPrice = listingPrice.toString()
+  before(async function () {
+    EvvelandMarketplace = await ethers.getContractFactory('EvvelandMarketplace');
+    marketplace = await EvvelandMarketplace.deploy();
+    await marketplace.deployed();
 
-        const auctionPrice = hre.ethers.utils.parseUnits('1', 'ether')
+    console.log("Deployed Evveland Marketplace contract: ", marketplace.address)
 
-
-        /* create two tokens */
-        await marketplace.createToken("https://marketplace.evveland.com/token1", auctionPrice, { value: listingPrice })
-        await marketplace.createToken("https://marketplace.evveland.com/token2", auctionPrice, { value: listingPrice })
-
-        const [_, buyerAddress] =  await hre.ethers.getSigners()
-
-        /** execute sale of token to another user */
-        await marketplace.connect(buyerAddress).createMarketSale(1, {value: auctionPrice})
-
-        /** resell a token */
-        await marketplace.connect(buyerAddress).resellToken(1, auctionPrice, {value: listingPrice})
-
-        /** query for and return the unsold items */
-        items = await marketplace.fetchMarketItems()
-        items = await Promise.all(items.map(async i => {
-            const  tokenUri = await marketplace.tokenURI(i.tokenId)
-            let item = {
-                price: i.price.toString(),
-                tokenId: i.tokenId.toString(),
-                seller: i.seller,
-                owner: i.owner,
-                tokenUri
-            }
-            return item
-        }))
-    
-        console.log('returned items: ', items)
-
-        listedItems = await  marketplace.fetchItemsListed()
-
+    const [owner, alice, bob] = await ethers.getSigners();
+    await marketplace.createMarketItem(uri1, _nftPrice, {
+      from: owner.address,
+      value: _listingPrice
     })
-})
+
+  });
+
+  // beforeEach(async function () {
+
+
+  // });
+
+  it('Gets the listing fee from the marketplace', async function () {
+    listingPrice = await marketplace.getListingPrice();
+    console.log('Listing price:' + new ethers.BigNumber.from(listingPrice._hex).toString())
+    expect(listingPrice.toString()).to.equal(_listingPrice);
+  });
+
+  it("Owner of the first token should be the owner account", async function () {
+    const [owner, alice, bob] = await ethers.getSigners();
+    console.log("owner of token 1:", owner.address)
+    const _owner = await marketplace.ownerOf(1)
+    expect(_owner).to.equal(owner.address)
+  })
+  
+  it("Test the updateListingPrice function", async function () {
+    const [owner, alice, bob] = await ethers.getSigners();
+    let _newPrice = ethers.utils.parseEther("0.3").toString();
+    await marketplace.updateListingPrice(_newPrice, {
+      from: owner.address
+    })
+    expect((await marketplace.getListingPrice()).toString()).to.equal(_newPrice)
+
+  })
+});
