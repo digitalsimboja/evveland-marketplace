@@ -1,33 +1,84 @@
-import '../styles/globals.css'
-import Link from 'next/link'
+import { ChakraProvider } from "@chakra-ui/react";
+import "@rainbow-me/rainbowkit/styles.css";
+import "../styles/globals.css";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  gql,
+} from "@apollo/client";
+import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { configureChains, createClient, WagmiConfig } from "wagmi";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import { SUBGRAPH_URL } from "../constants";
+
+
+const polygonChain = {
+  id: 80001,
+  name: "Mumbai Testnet",
+  network: "polygon",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Matic",
+    symbol: "MATIC",
+  },
+  rpcUrls: {
+    default: "https://rpc-mumbai.maticvigil.com",
+  },
+  blockExplorers: {
+    default: {
+      name: "polygonscan",
+      url: "https://mumbai.polygonscan.com/",
+    },
+  },
+  testnet: true,
+};
+
+const { chains, provider } = configureChains(
+  [polygonChain],
+  [
+    jsonRpcProvider({
+      rpc: (chain) => {
+        if (chain.id !== polygonChain.id) {
+          throw new Error("Error! Switch your network to Polygon Mumbai Testnet");
+          return null;
+        };
+        return { http: chain.rpcUrls.default };
+      },
+    }),
+  ]
+);
+
+const { connectors } = getDefaultWallets({
+  appName: "Evveland Metaverse Marketplace",
+  chains,
+});
+
+const wagmiClient = createClient({
+  autoConnect: true,
+  connectors,
+  provider,
+});
+
+const appolloClient = new ApolloClient({
+  uri: SUBGRAPH_URL,
+  cache: new InMemoryCache(),
+});
 
 function MyApp({ Component, pageProps }) {
   return (
-    <div>
-      <nav className="border-b p-6">
-        <p className="text-4xl font-bold">Evveland Metaverse Marketplace</p>
-        <div className="flex mt-4">
+    <ApolloProvider client={appolloClient}>
+    <WagmiConfig client={wagmiClient}>
+      <RainbowKitProvider chains={chains}>
+      
+        <ChakraProvider>
+          <Component {...pageProps} />
+        </ChakraProvider>
         
-            <a   href="/" className="mr-4 text-pink-500">
-              Home
-            </a>
-            <a href="/create-nft" className="mr-6 text-pink-500">
-              Sell NFT
-            </a>
-            <a  href="/my-nfts" className="mr-6 text-pink-500">
-              My NFTs
-            </a>
-            <a  href="/dashboard" className="mr-6 text-pink-500">
-              Dashboard
-            </a>
-            <a  href="/dashboard" className="mr-6 text-pink-500">
-              Rewards Program
-            </a>
-        </div>
-      </nav>
-      <Component {...pageProps} />
-    </div>
-  )
+      </RainbowKitProvider>
+    </WagmiConfig>
+    </ApolloProvider>
+  );
 }
 
-export default MyApp
+export default MyApp;
