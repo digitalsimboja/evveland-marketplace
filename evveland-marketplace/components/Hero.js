@@ -4,7 +4,8 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 export default function Hero() {
   return (
     <>
-      <Container maxW={"3xl"}>
+      <Container  maxW={"10xl"} bgImage="url('/images/bg_marketplace.jpg')"   bgPosition="center"
+  bgRepeat="no-repeat">
         <Stack
           as={Box}
           textAlign={"center"}
@@ -23,7 +24,7 @@ export default function Hero() {
               Connect your wallet to create and own NFTs on the Marketplace forever
             </Text>
           </Heading>
-          <Text color={"gray.500"}>
+          <Text color={"white"} fontSize={{ base: "2xs", sm: "2xl", md: "2xl" }}>
             Available on the Marketplace includes Virtual Venues, Digital Merchandises, and lots more...
           </Text>
           <Stack
