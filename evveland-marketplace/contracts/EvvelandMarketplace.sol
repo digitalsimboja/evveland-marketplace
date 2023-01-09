@@ -14,11 +14,11 @@ contract EvvelandMarketplace is ERC721URIStorage, Ownable {
 
     uint256 public listingPrice = 0.025 ether;
 
-    mapping(string => bool) private _usedTokenURI;
-    mapping(uint256 => MarketItem) private _tokenIdToMarketItem;
+    mapping(string => bool) private _usedTokenURI; // used token URI
+    mapping(uint256 => MarketItem) private _tokenIdToMarketItem; // token Id mapped to the NFT market item
 
-    mapping(address => mapping(uint256 => uint256)) private _ownedTokens;
-    mapping(uint256 => uint256) private _tokenIdTOwnedIndex;
+    mapping(address => mapping(uint256 => uint256)) private _ownedTokens; // User owned tokens, a mapping of user address => tokenId => amount(quantity)
+    mapping(uint256 => uint256) private _tokenIdTOwnedIndex; // token ID mapped to the index
 
     uint256[] private _totalMarketItems;
     mapping(uint256 => uint256) private _tokenIdToNFTIndex;
@@ -119,6 +119,11 @@ contract EvvelandMarketplace is ERC721URIStorage, Ownable {
         }
 
         return items;
+    }
+
+    function getMarketItem(uint256 tokenId) public view returns (MarketItem memory) {
+        MarketItem storage item = _tokenIdToMarketItem[tokenId];
+        return item;
     }
 
     function getUserOwnedNfts() public view returns (MarketItem[] memory) {
