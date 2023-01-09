@@ -27,15 +27,7 @@ export default function Hero() {
           <Text color={"white"} fontSize={{ base: "2xs", sm: "2xl", md: "2xl" }}>
             Available on the Marketplace includes Virtual Venues, Digital Merchandises, and lots more...
           </Text>
-          <Stack
-            direction={"column"}
-            spacing={3}
-            align={"center"}
-            alignSelf={"center"}
-            position={"relative"}
-          >
-            <ConnectButton />
-          </Stack>
+         
         </Stack>
       </Container>
     </>
