@@ -44,7 +44,7 @@ const Links = [
  
 ];
 
-const NavLink = ({ children }) => (
+const NavLink = ({ name, url }) => (
   <Link
     px={2}
     py={1}
@@ -53,8 +53,8 @@ const NavLink = ({ children }) => (
       textDecoration: 'none',
       bg: useColorModeValue('gray.200', 'gray.700'),
     }}
-    href={'#'}>
-    {children}
+    href={url}>
+    {name}
   </Link>
 );
 
@@ -79,8 +79,8 @@ export default function Navbar() {
               spacing={4}
               color={'whiteAlpha.900'}
               display={{ base: 'none', md: 'flex' }}>
-              {Links.map((link, index) => (
-                <NavLink key={index} href={link.url}>{link.name}</NavLink>
+              {Links.map((link, i) => (
+                <NavLink key={i} url={link.url} name={link.name}>{link.name}</NavLink>
               ))}
             </HStack>
           </HStack>
@@ -133,10 +133,6 @@ export default function Navbar() {
         ) : null}
       </Box>
 
-      <Box>
-        <Hero />
-        <Features />
-      </Box>
     </>
   );
 }
