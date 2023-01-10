@@ -20,7 +20,29 @@ import { ConnectButton, wallet } from "@rainbow-me/rainbowkit";
 import Hero from './Hero';
 import Features from './Features';
 
-const Links = ['Dashboard', 'Create NFT', 'Buy NFT', 'List NFT', 'Rewards'];
+const Links = [
+  {name: 'Dashboard',
+  url: '/dashboard'
+},
+{
+  name: 'Create NFT', 
+  url: '/create-nft',
+},
+{
+  name:  'Buy NFT',
+  url: '/buy-nft',
+},
+{
+  name: 'List NFT',
+  url: '/list-nft'
+},
+{
+  name:  'Rewards',
+  url: '/rewards'
+}
+  
+ 
+];
 
 const NavLink = ({ children }) => (
   <Link
@@ -57,8 +79,8 @@ export default function Navbar() {
               spacing={4}
               color={'whiteAlpha.900'}
               display={{ base: 'none', md: 'flex' }}>
-              {Links.map((link) => (
-                <NavLink key={link}>{link}</NavLink>
+              {Links.map((link, index) => (
+                <NavLink key={index} href={link.url}>{link.name}</NavLink>
               ))}
             </HStack>
           </HStack>
