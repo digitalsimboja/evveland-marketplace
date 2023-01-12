@@ -12,6 +12,9 @@ import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { SUBGRAPH_URL } from "../constants";
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const polygonChain = {
   id: 80001,
@@ -67,17 +70,22 @@ const appolloClient = new ApolloClient({
 
 function MyApp({ Component, pageProps }) {
   return (
-    <ApolloProvider client={appolloClient}>
-    <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider chains={chains}>
-      
-        <ChakraProvider>
-          <Component {...pageProps} />
-        </ChakraProvider>
-        
-      </RainbowKitProvider>
-    </WagmiConfig>
-    </ApolloProvider>
+    <>
+      <ToastContainer />
+      <ApolloProvider client={appolloClient}>
+        <WagmiConfig client={wagmiClient}>
+          <RainbowKitProvider chains={chains}>
+
+            <ChakraProvider>
+              <Component {...pageProps} />
+            </ChakraProvider>
+
+          </RainbowKitProvider>
+        </WagmiConfig>
+      </ApolloProvider>
+
+    </>
+
   );
 }
 
