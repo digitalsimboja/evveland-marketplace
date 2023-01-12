@@ -9,6 +9,7 @@ import {
   GridItem,
   Container,
   useColorModeValue,
+  Link,
 } from '@chakra-ui/react';
 import { } from '@chakra-ui/react';
 
@@ -40,9 +41,12 @@ export default function Features() {
             <chakra.h2 fontSize="3xl" fontWeight="700">
               Products
             </chakra.h2>
-            <Button colorScheme='whiteAlpha' size="md">
+            <Link href='/create-nft'>
+             <Button colorScheme='whiteAlpha' size="md">
               Create NFT
             </Button>
+            ,</Link>
+           
           </VStack>
         </GridItem>
         <GridItem>

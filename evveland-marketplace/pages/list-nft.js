@@ -1,6 +1,6 @@
 import Base from "../components/Base"
 
-export default function CreateNFT() {
+export default function ListNFT() {
     return (
         <>
         {/* Insert Navbar */}

@@ -63,7 +63,7 @@ export default function Navbar() {
 
   return (
     <>
-      <Box borderColor={useColorModeValue("gray.200", "gray.900")} px={4}>
+      <Box width={"100vw"} bg={useColorModeValue("gray.800", "gray: 800")} px={4}>
         <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
           <IconButton
             size={'md'}
@@ -73,7 +73,7 @@ export default function Navbar() {
             onClick={isOpen ? onClose : onOpen}
           />
           <HStack spacing={8} alignItems={'center'} color={'whiteAlpha.900'}>
-            <Box>Evveland Marketplace</Box>
+            <Link href='/' display={{ base: 'none', md: 'flex' }}> Evveland Marketplace </Link>
             <HStack
               as={'nav'}
               spacing={4}
