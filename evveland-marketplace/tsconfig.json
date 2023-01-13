@@ -23,7 +23,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "pages/api/verify-image.ts", "pages/api/verify-image.ts"  ],
   "exclude": [
     "node_modules"
   ]

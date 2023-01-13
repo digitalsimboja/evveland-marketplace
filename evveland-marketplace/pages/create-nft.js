@@ -62,7 +62,6 @@ export default function CreateNFT() {
     const buffer = await file.arrayBuffer();
     const bytes = new Uint8Array(buffer);
 
-
     try {
       const { signedData, account } = await getSignedData();
       const promise = axios.post("/api/verify-image", {
@@ -95,15 +94,12 @@ export default function CreateNFT() {
 
   const getSignedData = async () => {
     const messageToSign = await axios.get("/api/verify")
-    console.log('messageToSign', messageToSign)
     const account = address;
-    transactionData = concat(JSON.stringify(messageToSign.data), account, messageToSign.data.id)
-    
-
-    signMessage({
-      message: transactionData
+        
+    const signedData = await window.ethereum.request({
+      method: "personal_sign",
+      params: [JSON.stringify(messageToSign.data), account, messageToSign.data.id]
     })
-    const signedData = data
 
     return { signedData, account }
   }
