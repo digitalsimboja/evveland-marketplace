@@ -1,11 +1,13 @@
 import { Switch } from "@chakra-ui/react"
-import { useState } from "react"
+import Link from 'next/link';
+import { useRef, useState } from "react"
 import { useAccount, useContract, useSignMessage, useSigner } from 'wagmi'
 import axios from 'axios';
 import { toast } from "react-toastify";
 import Base from "../components/Base"
 import { ethers } from "ethers";
 import EvvelandMarketplace from "../public/contracts/EvvelandMarketplace.json"
+import { concat, verifyMessage } from 'ethers/lib/utils'
 
 
 const ALLOWED_FIELDS = ["name", "description", "image", "attributes"];
@@ -13,7 +15,15 @@ const MARKETPLACE = "0x1fdbd99b01eb79d75a71ccf5b008f222cc20247e";
 const ABI = EvvelandMarketplace.abi
 
 export default function CreateNFT() {
-  const { signMessage } = useSignMessage()
+  const recoveredAddress = useRef("")
+  const { data, error, signMessage } = useSignMessage({
+    onSuccess(data, variables) {
+      // Verify signature when sign message succeeds
+      const address = verifyMessage(variables.message, data)
+      recoveredAddress.current = address
+    }
+
+  })
   const { data: signer, isError, isLoading } = useSigner()
   const { address, isConnecting, isDisconnected } = useAccount()
   const contract = useContract({
@@ -85,12 +95,15 @@ export default function CreateNFT() {
 
   const getSignedData = async () => {
     const messageToSign = await axios.get("/api/verify")
+    console.log('messageToSign', messageToSign)
     const account = address;
-    const signedData = signMessage({
-      message: [JSON.stringify(messageToSign.data), account, messageToSign.data.id]
-    })
+    transactionData = concat(JSON.stringify(messageToSign.data), account, messageToSign.data.id)
+    
 
-    console.log("signedData: ", signedData)
+    signMessage({
+      message: transactionData
+    })
+    const signedData = data
 
     return { signedData, account }
   }

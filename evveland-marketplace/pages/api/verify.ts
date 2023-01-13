@@ -9,7 +9,6 @@ export default withSession(async (req: NextApiRequest & {session: Session}, res:
     try {
       const {body} = req;
       const nft = body.nft
-      
       if (!nft.name || !nft.description || !nft.attributes) {
         return res.status(422).send({message: "Some of the form data are missing!"}); 
       }
