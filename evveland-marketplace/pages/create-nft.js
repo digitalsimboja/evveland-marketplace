@@ -1,19 +1,26 @@
 import { Switch } from "@chakra-ui/react"
 import { useState } from "react"
-import { useAccount, useContract, useSignMessage } from 'wagmi'
+import { useAccount, useContract, useSignMessage, useSigner } from 'wagmi'
 import axios from 'axios';
 import { toast } from "react-toastify";
 import Base from "../components/Base"
 import { ethers } from "ethers";
-
+import EvvelandMarketplace from "../public/contracts/EvvelandMarketplace.json"
 
 
 const ALLOWED_FIELDS = ["name", "description", "image", "attributes"];
-
+const MARKETPLACE = "0x1fdbd99b01eb79d75a71ccf5b008f222cc20247e";
+const ABI = EvvelandMarketplace.abi
 
 export default function CreateNFT() {
   const { signMessage } = useSignMessage()
+  const { data: signer, isError, isLoading } = useSigner()
   const { address, isConnecting, isDisconnected } = useAccount()
+  const contract = useContract({
+    address: MARKETPLACE,
+    abi: ABI,
+    signerOrProvider: signer,
+  })
   const [hasURI, setHasURI] = useState(false)
   const [nftURI, setNftURI] = useState("")
   const [nftMeta, setNftMeta] = useState({
@@ -125,11 +132,6 @@ export default function CreateNFT() {
   }
 
   const createNft = async () => {
-    const contract = useContract({
-      address: process.env.MARKETPLACE_ADDRESS,
-      abi: process.env.MARKETPLACE_ABI,
-    })
-
     console.log(contract)
     try {
       const nftRes = await axios.get(nftURI);

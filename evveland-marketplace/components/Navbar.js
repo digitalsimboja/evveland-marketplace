@@ -39,7 +39,12 @@ const Links = [
 {
   name:  'Rewards',
   url: '/rewards'
+},
+{
+  name:  'Affiliate',
+  url: '/affiliate'
 }
+  
   
  
 ];
