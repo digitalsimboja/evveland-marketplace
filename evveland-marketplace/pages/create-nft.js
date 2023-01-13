@@ -13,7 +13,7 @@ const ALLOWED_FIELDS = ["name", "description", "image", "attributes"];
 
 export default function CreateNFT() {
   const { signMessage } = useSignMessage()
-
+  const { address, isConnecting, isDisconnected } = useAccount()
   const [hasURI, setHasURI] = useState(false)
   const [nftURI, setNftURI] = useState("")
   const [nftMeta, setNftMeta] = useState({
@@ -78,11 +78,12 @@ export default function CreateNFT() {
 
   const getSignedData = async () => {
     const messageToSign = await axios.get("/api/verify")
-    const { address, isConnecting, isDisconnected } = useAccount()
     const account = address;
     const signedData = signMessage({
       message: [JSON.stringify(messageToSign.data), account, messageToSign.data.id]
     })
+
+    console.log("signedData: ", signedData)
 
     return { signedData, account }
   }
