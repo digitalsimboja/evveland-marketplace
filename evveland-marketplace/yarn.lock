@@ -1532,6 +1532,48 @@
   resolved "https://registry.yarnpkg.com/@graphql-typed-document-node/core/-/core-3.1.1.tgz#076d78ce99822258cf813ecc1e7fa460fa74d052"
   integrity sha512-NQ17ii0rK1b34VZonlmT2QMJFI70m0TRwbknO/ihlbatXyaktDhN/98vBiUU6kNBPljqGqyIrl2T4nY2RpFANg==
 
+"@hapi/b64@5.x.x":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@hapi/b64/-/b64-5.0.0.tgz#b8210cbd72f4774985e78569b77e97498d24277d"
+  integrity sha512-ngu0tSEmrezoiIaNGG6rRvKOUkUuDdf4XTPnONHGYfSGRmDqPZX5oJL6HAdKTo1UQHECbdB4OzhWrfgVppjHUw==
+  dependencies:
+    "@hapi/hoek" "9.x.x"
+
+"@hapi/boom@9.x.x":
+  version "9.1.4"
+  resolved "https://registry.yarnpkg.com/@hapi/boom/-/boom-9.1.4.tgz#1f9dad367c6a7da9f8def24b4a986fc5a7bd9db6"
+  integrity sha512-Ls1oH8jaN1vNsqcaHVYJrKmgMcKsC1wcp8bujvXrHaAqD2iDYq3HoOwsxwo09Cuda5R5nC0o0IxlrlTuvPuzSw==
+  dependencies:
+    "@hapi/hoek" "9.x.x"
+
+"@hapi/bourne@2.x.x":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@hapi/bourne/-/bourne-2.1.0.tgz#66aff77094dc3080bd5df44ec63881f2676eb020"
+  integrity sha512-i1BpaNDVLJdRBEKeJWkVO6tYX6DMFBuwMhSuWqLsY4ufeTKGVuV5rBsUhxPayXqnnWHgXUAmWK16H/ykO5Wj4Q==
+
+"@hapi/cryptiles@5.x.x":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@hapi/cryptiles/-/cryptiles-5.1.0.tgz#655de4cbbc052c947f696148c83b187fc2be8f43"
+  integrity sha512-fo9+d1Ba5/FIoMySfMqPBR/7Pa29J2RsiPrl7bkwo5W5o+AN1dAYQRi4SPrPwwVxVGKjgLOEWrsvt1BonJSfLA==
+  dependencies:
+    "@hapi/boom" "9.x.x"
+
+"@hapi/hoek@9.x.x":
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/@hapi/hoek/-/hoek-9.3.0.tgz#8368869dcb735be2e7f5cb7647de78e167a251fb"
+  integrity sha512-/c6rf4UJlmHlC9b5BaNvzAcFv7HZ2QHaV0D4/HNlBdvFnvQq8RI4kYdhyPCl7Xj+oWvTWQ8ujhqS53LIgAe6KQ==
+
+"@hapi/iron@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@hapi/iron/-/iron-6.0.0.tgz#ca3f9136cda655bdd6028de0045da0de3d14436f"
+  integrity sha512-zvGvWDufiTGpTJPG1Y/McN8UqWBu0k/xs/7l++HVU535NLHXsHhy54cfEMdW7EjwKfbBfM9Xy25FmTiobb7Hvw==
+  dependencies:
+    "@hapi/b64" "5.x.x"
+    "@hapi/boom" "9.x.x"
+    "@hapi/bourne" "2.x.x"
+    "@hapi/cryptiles" "5.x.x"
+    "@hapi/hoek" "9.x.x"
+
 "@humanwhocodes/config-array@^0.11.6":
   version "0.11.7"
   resolved "https://registry.npmjs.org/@humanwhocodes/config-array/-/config-array-0.11.7.tgz"
@@ -2593,6 +2635,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/cookie@^0.4.0":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@types/cookie/-/cookie-0.4.1.tgz#bfd02c1f2224567676c1545199f87c3a861d878d"
+  integrity sha512-XW/Aa8APYr6jSVVA1y/DEIZX0/GMKLEVekNG727R8cs56ahETkRAy/3DR7+fJyh7oUgGwNQaRfXCun0+KbWY7Q==
+
 "@types/http-cache-semantics@*":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@types/http-cache-semantics/-/http-cache-semantics-4.0.1.tgz#0ea7b61496902b95890dc4c3a116b60cb8dae812"
@@ -3580,7 +3627,7 @@ array-unique@^0.3.2:
   resolved "https://registry.yarnpkg.com/array-unique/-/array-unique-0.3.2.tgz#a894b75d4bc4f6cd679ef3244a9fd8f46ae2d428"
   integrity sha512-SleRWjh9JUud2wH1hPs9rZBZ33H6T9HOiL0uwGnGx9FpE6wKGyfWugmbkEOIs6qWrZhg0LWeLziLrEwQJhs5mQ==
 
-array.prototype.flat@^1.2.5:
+array.prototype.flat@^1.2.4, array.prototype.flat@^1.2.5:
   version "1.3.1"
   resolved "https://registry.npmjs.org/array.prototype.flat/-/array.prototype.flat-1.3.1.tgz"
   integrity sha512-roTU0KWIOmJ4DRLmwKd19Otg0/mT3qPNt0Qb3GWW8iObuZXxrjB/pzn0R3hqpRSWg4HCwqx+0vwOnWnvlOyeIA==
@@ -5024,7 +5071,7 @@ clone-response@^1.0.2:
   dependencies:
     mimic-response "^1.0.0"
 
-clone@2.1.2, clone@^2.0.0, clone@^2.1.1:
+clone@2.1.2, clone@^2.0.0, clone@^2.1.1, clone@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/clone/-/clone-2.1.2.tgz#1b7f4b9f591f1e8f83670401600345a02887435f"
   integrity sha512-3Pe/CF1Nn94hyhIYpjtiLhdCoEoz0DqQ+988E9gmeEdQZlojxnOb74wctFyuwWQHzqyf9X7C7MG8juUpqBJT8w==
@@ -7922,6 +7969,14 @@ ipfs-utils@^9.0.6:
     react-native-fetch-api "^2.0.0"
     stream-to-it "^0.2.2"
 
+iron-store@^1.3.0:
+  version "1.3.5"
+  resolved "https://registry.yarnpkg.com/iron-store/-/iron-store-1.3.5.tgz#62709c6381af72206d8a00ad7de76d011aeb65a4"
+  integrity sha512-3RBkmVA6AZ3jezmLeX5H0lX1yS3fa90MFU9pL9vyhbpzXCRgAS7DLAfERXDPJEkT3jMZfxnVTTUwwfpB85ml7w==
+  dependencies:
+    "@hapi/iron" "^6.0.0"
+    clone "^2.1.2"
+
 is-accessor-descriptor@^0.1.6:
   version "0.1.6"
   resolved "https://registry.yarnpkg.com/is-accessor-descriptor/-/is-accessor-descriptor-0.1.6.tgz#a9e12cb3ae8d876727eeef3843f8a0897b5c98d6"
@@ -9421,6 +9476,18 @@ negotiator@0.6.3:
   version "0.6.3"
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.3.tgz#58e323a72fedc0d6f9cd4d31fe49f51479590ccd"
   integrity sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==
+
+next-iron-session@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/next-iron-session/-/next-iron-session-4.2.0.tgz#cad971389b0845ab4517d8b096dea817b022830f"
+  integrity sha512-RzdbAmB77HJYXPdWrOjsPPE/b6yiSDAwhXEnX5z6mSYUMh22vR1iJD/CeBjs3FWxL39qO78CsLtIjpcojFz4DA==
+  dependencies:
+    "@types/cookie" "^0.4.0"
+    array.prototype.flat "^1.2.4"
+    clone "^2.1.2"
+    cookie "^0.4.1"
+    debug "^4.3.1"
+    iron-store "^1.3.0"
 
 next-tick@^1.1.0:
   version "1.1.0"
@@ -12275,6 +12342,11 @@ uuid@^8.3.2:
   version "8.3.2"
   resolved "https://registry.npmjs.org/uuid/-/uuid-8.3.2.tgz"
   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
+
+uuid@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.0.tgz#592f550650024a38ceb0c562f2f6aa435761efb5"
+  integrity sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==
 
 validate-npm-package-license@^3.0.1:
   version "3.0.4"
