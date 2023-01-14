@@ -1,13 +1,15 @@
 import { Switch } from "@chakra-ui/react"
 import Link from 'next/link';
 import { useRef, useState } from "react"
-import { useAccount, useContract, useSignMessage, useSigner } from 'wagmi'
+import { useAccount, useContract, useNetwork, useSigner } from 'wagmi'
 import axios from 'axios';
 import { toast } from "react-toastify";
 import Base from "../components/Base"
 import { ethers } from "ethers";
+import { ExclamationIcon } from '@heroicons/react/solid';
 import EvvelandMarketplace from "../public/contracts/EvvelandMarketplace.json"
-import { concat, verifyMessage } from 'ethers/lib/utils'
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+
 
 
 const ALLOWED_FIELDS = ["name", "description", "image", "attributes"];
@@ -15,17 +17,9 @@ const MARKETPLACE = "0x1fdbd99b01eb79d75a71ccf5b008f222cc20247e";
 const ABI = EvvelandMarketplace.abi
 
 export default function CreateNFT() {
-  const recoveredAddress = useRef("")
-  const { data, error, signMessage } = useSignMessage({
-    onSuccess(data, variables) {
-      // Verify signature when sign message succeeds
-      const address = verifyMessage(variables.message, data)
-      recoveredAddress.current = address
-    }
-
-  })
+  const { chain, chains } = useNetwork()
   const { data: signer, isError, isLoading } = useSigner()
-  const { address, isConnecting, isDisconnected } = useAccount()
+  const { address, isConnecting, isConnected, isDisconnected } = useAccount()
   const contract = useContract({
     address: MARKETPLACE,
     abi: ABI,
@@ -39,8 +33,8 @@ export default function CreateNFT() {
     image: "",
     attributes: [
       { trait_type: "location", value: "Evveland Metaverse" },
-      { trait_type: "status", value: "Inactive" },
-      { trait_type: "event", value: "My awesome event" },
+      { trait_type: "status", value: "Active" },
+      { trait_type: "event", value: "Evveland Metaverse Event" },
     ]
   });
   const [price, setPrice] = useState("")
@@ -95,7 +89,7 @@ export default function CreateNFT() {
   const getSignedData = async () => {
     const messageToSign = await axios.get("/api/verify")
     const account = address;
-        
+
     const signedData = await window.ethereum.request({
       method: "personal_sign",
       params: [JSON.stringify(messageToSign.data), account, messageToSign.data.id]
@@ -141,7 +135,6 @@ export default function CreateNFT() {
   }
 
   const createNft = async () => {
-    console.log(contract)
     try {
       const nftRes = await axios.get(nftURI);
       const content = nftRes.data;
@@ -170,6 +163,32 @@ export default function CreateNFT() {
     } catch (e) {
       console.log(e.message)
     }
+  }
+
+  if (!isConnected) {
+    return (
+      <Base>
+        <div className="rounded-md bg-yellow-50 p-4 mt-10">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <ExclamationIcon className="h-5 w-5 text-yellow-400" aria-hidden="true" />
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-yellow-400" aria-hidden="true">Attention needed</h3>
+              <div className="mt-2 text-sm text-yellow-700">
+                <p>
+                  {isConnecting ? "Loading..." : <ConnectButton />}
+                </p>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+
+      </Base>
+    )
   }
 
 

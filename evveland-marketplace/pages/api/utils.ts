@@ -48,7 +48,7 @@ export const addressCheckMiddleware = async (
     const addrBuffer = util.pubToAddress(pubKey);
     const address = util.bufferToHex(addrBuffer);
 
-    if (address === req.body.address) {
+    if (address === req.body.address.toLowerCase()) {
       resolve("Correct Address");
     } else {
       reject("Wrong Address");
