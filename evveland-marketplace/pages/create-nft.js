@@ -1,23 +1,22 @@
 import { Switch } from "@chakra-ui/react"
 import Link from 'next/link';
-import { useRef, useState } from "react"
-import { useAccount, useContract, useNetwork, useSigner } from 'wagmi'
+import { useState } from "react"
+import { useAccount, useContract, useSigner } from 'wagmi'
 import axios from 'axios';
 import { toast } from "react-toastify";
-import Base from "../components/Base"
 import { ethers } from "ethers";
 import { ExclamationIcon } from '@heroicons/react/solid';
 import EvvelandMarketplace from "../public/contracts/EvvelandMarketplace.json"
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import dynamic from 'next/dynamic'
 
-
+const Base = dynamic(() => import('../components/Base'), { ssr: false });
 
 const ALLOWED_FIELDS = ["name", "description", "image", "attributes"];
 const MARKETPLACE = "0x1fdbd99b01eb79d75a71ccf5b008f222cc20247e";
 const ABI = EvvelandMarketplace.abi
 
 export default function CreateNFT() {
-  const { chain, chains } = useNetwork()
   const { data: signer, isError, isLoading } = useSigner()
   const { address, isConnecting, isConnected, isDisconnected } = useAccount()
   const contract = useContract({
@@ -75,7 +74,7 @@ export default function CreateNFT() {
       )
 
       const data = res.data
-
+      console.log("Pinata upload response: ", data)
       setNftMeta({
         ...nftMeta,
         image: `${process.env.NEXT_PUBLIC_PINATA_DOMAIN}/ipfs/${data.IpfsHash}`
@@ -151,6 +150,9 @@ export default function CreateNFT() {
         value: ethers.utils.parseEther(0.025.toString())
       }
       );
+      tx.wait()
+
+      console.log("Minted: ", tx)
 
       await toast.promise(
         tx.wait(), {
@@ -165,28 +167,23 @@ export default function CreateNFT() {
     }
   }
 
+
   if (!isConnected) {
     return (
       <Base>
-        <div className="rounded-md bg-yellow-50 p-4 mt-10">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <ExclamationIcon className="h-5 w-5 text-yellow-400" aria-hidden="true" />
-            </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-yellow-400" aria-hidden="true">Attention needed</h3>
-              <div className="mt-2 text-sm text-yellow-700">
-                <p>
-                  {isConnecting ? "Loading..." : <ConnectButton />}
-                </p>
-
+        <div className="flex rounded-md bg-yellow-50 p-4 mt-10">
+          <div className="flex-shrink-0">
+            <ExclamationIcon className="h-5 w-5 text-yellow-400" aria-hidden="true" />
+          </div>
+          <div className="ml-3">
+            <h3 className="text-sm font-medium text-yellow-800">Attention!!!</h3>
+            <div className="mt-2 text-sm text-yellow-700">
+              <div>
+                {isConnecting ? "Loading" : <ConnectButton />}
               </div>
-
             </div>
           </div>
         </div>
-
-
       </Base>
     )
   }
@@ -251,7 +248,7 @@ export default function CreateNFT() {
                     <div className='mb-4 p-4'>
                       <div className="font-bold">Your metadata: </div>
                       <div>
-                        <Link href={nftURI}>
+                        <Link href={nftURI} legacyBehavior>
                           <a className="underline text-indigo-600">
                             {nftURI}
                           </a>
@@ -399,7 +396,7 @@ export default function CreateNFT() {
                       )}
                     </div>
                     <p className="text-sm !mt-2 text-gray-500">
-                      Choose value from 0 to 100
+                      Edit the NFT attributes
                     </p>
                   </div>
                   <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">

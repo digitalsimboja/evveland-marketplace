@@ -29,9 +29,8 @@ export default withSession(
       }
 
       await addressCheckMiddleware(req, res);
-      const byte_value = Object.values(bytes)
-      const buffer = Buffer.from(byte_value.toString())
-
+      // const byte_value = Object.values(bytes)
+      const buffer = Buffer.from(JSON.stringify(bytes))
       const formData = new FormData();
 
       formData.append("file", buffer, {
