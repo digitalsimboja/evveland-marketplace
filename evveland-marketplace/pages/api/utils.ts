@@ -21,7 +21,7 @@ export function withSession(handler: any) {
 
 const url =
   process.env.NODE_ENV === "production"
-    ? process.env.QUICKNODE_HTTP_URL
+    ? process.env.NEXT_PUBLIC_QUICKNODE_HTTP_URL
     : "http://127.0.0.1:3000";
 
 export const addressCheckMiddleware = async (
