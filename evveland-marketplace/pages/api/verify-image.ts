@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-
+import { Readable } from "stream"
 import { NextApiRequest, NextApiResponse } from "next";
 import { Session } from "next-iron-session";
 import {
@@ -29,14 +29,16 @@ export default withSession(
       }
 
       await addressCheckMiddleware(req, res);
-      const byte_value = Object.values(bytes)
-      const buffer = Buffer.from(JSON.stringify(byte_value))
+      const byte_value = Object.values(bytes);
+      const buffer = Buffer.from(JSON.stringify(byte_value));
+      const stream = Readable.from(buffer);
       
       const formData = new FormData();
 
-      formData.append("file", buffer, {
+      formData.append("file", stream, {
         contentType,
-        filename: fileName + "-" + uuidv4(),
+        // filename: fileName + "-" + uuidv4(),
+        filepath: fileName + "-" + uuidv4() +".png",
       });
 
       const fileRes = await axios.post(
