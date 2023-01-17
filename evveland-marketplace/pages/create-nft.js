@@ -15,9 +15,12 @@ const Base = dynamic(() => import('../components/Base'), { ssr: false });
 const ALLOWED_FIELDS = ["name", "description", "image", "attributes"];
 const MARKETPLACE = "0x1fdbd99b01eb79d75a71ccf5b008f222cc20247e";
 const ABI = EvvelandMarketplace.abi
+const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY
+const pinataSecretApiKey = process.env.NEXT_PUBLIC_PINATA_SECRET_API_KEY
 
 export default function CreateNFT() {
   const { data: signer, isError, isLoading } = useSigner()
+  const [selectedFile, setSelectedFile] = useState()
   const { address, isConnecting, isConnected, isDisconnected } = useAccount()
   const contract = useContract({
     address: MARKETPLACE,
@@ -44,6 +47,68 @@ export default function CreateNFT() {
     setNftMeta({ ...nftMeta, [name]: value })
   }
 
+  const changeHandler = (event) => {
+    if (!event.target.files || event.target.files.length === 0) {
+      console.error("Select a file");
+      return;
+    }
+    setSelectedFile(event.target.files[0]);
+  };
+
+  const handleSubmission = async () => {
+    const formData = new FormData();
+    formData.append('file', selectedFile)
+    const metadata = JSON.stringify({
+      name: selectedFile.name,
+    });
+    formData.append('pinataMetadata', metadata);
+    const options = JSON.stringify({
+      cidVersion: 0,
+    })
+    formData.append('pinataOptions', options);
+
+    try {
+      const { signedData, account } = await getSignedData();
+      const success = axios.post("/api/verify-image", {
+        address: account,
+        signature: signedData,
+        contentType: selectedFile.type,
+        fileName: selectedFile.name.replace(/\.[^/.]+$/, "")
+      });
+      const res = await axios.post("https://api.pinata.cloud/pinning/pinFileToIPFS", formData, {
+        maxBodyLength: "Infinity",
+        headers: {
+          'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
+          pinata_api_key: pinataApiKey,
+          pinata_secret_api_key: pinataSecretApiKey,
+        }
+      });
+
+      const data = res.data
+      console.log("Pinata upload response: ", data)
+      setNftMeta({
+        ...nftMeta,
+        image: `${process.env.NEXT_PUBLIC_PINATA_DOMAIN}/ipfs/${data.IpfsHash}`
+      })
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getSignedData = async () => {
+
+    const messageToSign = await axios.get("/api/verify")
+    console.log('messageToSign,', messageToSign)
+    const account = address;
+
+    const signedData = await window.ethereum.request({
+      method: "personal_sign",
+      params: [JSON.stringify(messageToSign.data), account, messageToSign.data.id]
+    })
+
+    return { signedData, account }
+  }
+
 
 
   const handleImage = async (e) => {
@@ -52,6 +117,7 @@ export default function CreateNFT() {
       return;
     }
     const file = e.target.files[0];
+
     const buffer = await file.arrayBuffer();
     const bytes = new Uint8Array(buffer);
 
@@ -85,17 +151,7 @@ export default function CreateNFT() {
     }
   }
 
-  const getSignedData = async () => {
-    const messageToSign = await axios.get("/api/verify")
-    const account = address;
 
-    const signedData = await window.ethereum.request({
-      method: "personal_sign",
-      params: [JSON.stringify(messageToSign.data), account, messageToSign.data.id]
-    })
-
-    return { signedData, account }
-  }
 
   const handleAttributeChange = (e) => {
     const { name, value } = e.target;
@@ -188,6 +244,7 @@ export default function CreateNFT() {
     )
   }
 
+  console.log("selectedFile", selectedFile)
 
   return (
     <Base>
@@ -364,7 +421,7 @@ export default function CreateNFT() {
                               >
                                 <span>Upload a file</span>
                                 <input
-                                  onChange={handleImage}
+                                  onChange={changeHandler}
                                   id="file-upload"
                                   name="file-upload"
                                   type="file"
@@ -372,10 +429,19 @@ export default function CreateNFT() {
                                 />
                               </label>
                               <p className="pl-1">or drag and drop</p>
+
                             </div>
                             <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
                           </div>
                         </div>
+                        <button
+                          onClick={handleSubmission}
+                          type="button"
+                          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                          Pin Image
+                        </button>
+
                       </div>
                     }
                     <div className="grid grid-cols-6 gap-6">

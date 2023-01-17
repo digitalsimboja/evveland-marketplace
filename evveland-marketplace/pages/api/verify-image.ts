@@ -22,40 +22,40 @@ export const config = {
 export default withSession(
   async (req: NextApiRequest & { session: Session }, res: NextApiResponse) => {
     if (req.method === "POST") {
-      const { bytes, fileName, contentType } = req.body;
+      const { fileName, contentType } = req.body;
 
-      if (!bytes || !fileName || !contentType) {
+      if ( !fileName || !contentType) {
         return res.status(422).send({ message: "Image data are missing" });
       }
 
       await addressCheckMiddleware(req, res);
-      const byte_value = Object.values(bytes);
-      const buffer = Buffer.from(JSON.stringify(byte_value));
-      const stream = Readable.from(buffer);
+      // const byte_value = Object.values(bytes);
+      // const buffer = Buffer.from(JSON.stringify(byte_value));
+      // const stream = Readable.from(buffer);
       
-      const formData = new FormData();
+      // const formData = new FormData();
 
-      formData.append("file", stream, {
-        contentType,
-        // filename: fileName + "-" + uuidv4(),
-        filepath: fileName + "-" + uuidv4() +".png",
-      });
+      // formData.append("file", stream, {
+      //   // contentType,
+      //   // filename: fileName + "-" + uuidv4(),
+      //   filepath: fileName + "-" + uuidv4() +".png",
+      // });
 
-      const fileRes = await axios.post(
-        "https://api.pinata.cloud/pinning/pinFileToIPFS",
-        formData,
-        {
-          maxBodyLength: Infinity,
-          headers: {
-            "Content-Type": `multipart/form-data; boundary=${formData.getBoundary()}`,
-            bodyParser: 4,
-            pinata_api_key: pinataApiKey,
-            pinata_secret_api_key: pinataSecretApiKey,
-          },
-        }
-      );
+      // const fileRes = await axios.post(
+      //   "https://api.pinata.cloud/pinning/pinFileToIPFS",
+      //   formData,
+      //   {
+      //     maxBodyLength: Infinity,
+      //     headers: {
+      //       "Content-Type": `multipart/form-data; boundary=${formData.getBoundary()}`,
+      //       bodyParser: 4,
+      //       pinata_api_key: pinataApiKey,
+      //       pinata_secret_api_key: pinataSecretApiKey,
+      //     },
+      //   }
+      // );
 
-      return res.status(200).send(fileRes.data);
+      return res.status(200).send({ message: "Success" });
     } else {
       return res.status(422).send({ message: "Invalid endpoint" });
     }

@@ -36,7 +36,7 @@ yarn-error.log*
 next-env.d.ts
 
 node_modules
-.env
+.env.local
 coverage
 coverage.json
 typechain

@@ -4,10 +4,10 @@ import { withIronSession, Session } from "next-iron-session";
 import * as util from "ethereumjs-util";
 import EvvelandMarketplace from "../../public/contracts/EvvelandMarketplace.json"
 
-export const contractAddress = process.env.MARKETPLACE_ADDRESS;
+export const contractAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS;
 export const abi = EvvelandMarketplace.abi
-export const pinataApiKey = process.env.PINATA_API_KEY as string;
-export const pinataSecretApiKey = process.env.PINATA_SECRET_API_KEY as string;
+export const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY as string;
+export const pinataSecretApiKey = process.env.NEXT_PUBLIC_PINATA_SECRET_API_KEY as string;
 
 export function withSession(handler: any) {
   return withIronSession(handler, {
