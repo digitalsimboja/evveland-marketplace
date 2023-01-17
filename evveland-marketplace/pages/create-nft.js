@@ -47,7 +47,7 @@ export default function CreateNFT() {
     setNftMeta({ ...nftMeta, [name]: value })
   }
 
-  const changeHandler = (event) => {
+  const uploadHandler = (event) => {
     if (!event.target.files || event.target.files.length === 0) {
       console.error("Select a file");
       return;
@@ -419,23 +419,24 @@ export default function CreateNFT() {
                                 htmlFor="file-upload"
                                 className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
                               >
-                                <span>Upload a file</span>
+                                {selectedFile ? <span>{selectedFile.name}</span> : <span>Upload a file</span> }
                                 <input
-                                  onChange={changeHandler}
+                                  onChange={uploadHandler}
                                   id="file-upload"
                                   name="file-upload"
                                   type="file"
                                   className="sr-only"
                                 />
                               </label>
-                              <p className="pl-1">or drag and drop</p>
+                              {selectedFile ? <p className="pl-1 text-yellow-500">Replace</p> : <p className="pl-1">or Drag and Drop</p>}
 
                             </div>
-                            <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                            <p className="text-xs text-gray-500"> PNG, JPG, GIF up to 10MB</p>
                           </div>
                         </div>
                         <button
                           onClick={handleSubmission}
+                          disabled={!selectedFile}
                           type="button"
                           className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         >

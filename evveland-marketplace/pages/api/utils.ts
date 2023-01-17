@@ -11,7 +11,7 @@ export const pinataSecretApiKey = process.env.NEXT_PUBLIC_PINATA_SECRET_API_KEY 
 
 export function withSession(handler: any) {
   return withIronSession(handler, {
-    password: process.env.SECRET_COOKIE_PASSWORD as string,
+    password: process.env.NEXT_PUBLIC_SECRET_COOKIE_PASSWORD as string,
     cookieName: "nft-auth-session",
     cookieOptions: {
       secure: process.env.NODE_ENV === "production" ? true : false,
