@@ -1,6 +1,6 @@
 import { Switch } from "@chakra-ui/react"
 import Link from 'next/link';
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useAccount, useContract, useSigner } from 'wagmi'
 import axios from 'axios';
 import { toast } from "react-toastify";
@@ -13,7 +13,7 @@ import dynamic from 'next/dynamic'
 const Base = dynamic(() => import('../components/Base'), { ssr: false });
 
 const ALLOWED_FIELDS = ["name", "description", "image", "attributes"];
-const MARKETPLACE = "0x1fdbd99b01eb79d75a71ccf5b008f222cc20247e";
+const MARKETPLACE = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS;
 const ABI = EvvelandMarketplace.abi
 const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY
 const pinataSecretApiKey = process.env.NEXT_PUBLIC_PINATA_SECRET_API_KEY
@@ -29,6 +29,7 @@ export default function CreateNFT() {
   })
   const [hasURI, setHasURI] = useState(false)
   const [nftURI, setNftURI] = useState("")
+  const [ipfsHash, setIpfsHash] = useState("")
   const [nftMeta, setNftMeta] = useState({
     name: "",
     description: "",
@@ -85,7 +86,7 @@ export default function CreateNFT() {
       });
 
       const data = res.data
-      console.log("Pinata upload response: ", data)
+
       setNftMeta({
         ...nftMeta,
         image: `${process.env.NEXT_PUBLIC_PINATA_DOMAIN}/ipfs/${data.IpfsHash}`
@@ -96,9 +97,7 @@ export default function CreateNFT() {
   };
 
   const getSignedData = async () => {
-
     const messageToSign = await axios.get("/api/verify")
-    console.log('messageToSign,', messageToSign)
     const account = address;
 
     const signedData = await window.ethereum.request({
@@ -108,49 +107,6 @@ export default function CreateNFT() {
 
     return { signedData, account }
   }
-
-
-
-  const handleImage = async (e) => {
-    if (!e.target.files || e.target.files.length === 0) {
-      console.error("Select a file");
-      return;
-    }
-    const file = e.target.files[0];
-
-    const buffer = await file.arrayBuffer();
-    const bytes = new Uint8Array(buffer);
-
-    try {
-      const { signedData, account } = await getSignedData();
-      const promise = axios.post("/api/verify-image", {
-        address: account,
-        signature: signedData,
-        bytes,
-        contentType: file.type,
-        fileName: file.name.replace(/\.[^/.]+$/, "")
-      });
-
-      const res = await toast.promise(
-        promise, {
-        pending: "Uploading image",
-        success: "Image uploaded",
-        error: "Failed to upload image"
-      }
-      )
-
-      const data = res.data
-      console.log("Pinata upload response: ", data)
-      setNftMeta({
-        ...nftMeta,
-        image: `${process.env.NEXT_PUBLIC_PINATA_DOMAIN}/ipfs/${data.IpfsHash}`
-      })
-
-    } catch (e) {
-      console.error(e.message)
-    }
-  }
-
 
 
   const handleAttributeChange = (e) => {
@@ -173,7 +129,6 @@ export default function CreateNFT() {
         signature: signedData,
         nft: nftMeta
       })
-
       const res = await toast.promise(
         promise, {
         pending: "Uploading metadata",
@@ -183,6 +138,7 @@ export default function CreateNFT() {
       )
 
       const data = res.data;
+      setIpfsHash(data.IpfsHash)
       setNftURI(`${process.env.NEXT_PUBLIC_PINATA_DOMAIN}/ipfs/${data.IpfsHash}`);
     } catch (e) {
       console.error(e.message);
@@ -191,10 +147,19 @@ export default function CreateNFT() {
 
   const createNft = async () => {
     try {
-      const nftRes = await axios.get(nftURI);
-      const content = nftRes.data;
+      const nftRes = await fetch(nftURI, {
+        method: 'GET',
+        mode: 'no-cors',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true,
+        credentials: 'same-origin',
+      }
+      );
 
-      Object.keys(content).forEach(key => {
+      Object.keys(nftRes).forEach(key => {
         if (!ALLOWED_FIELDS.includes(key)) {
           throw new Error("Invalid Json structure");
         }
@@ -244,7 +209,7 @@ export default function CreateNFT() {
     )
   }
 
-  console.log("selectedFile", selectedFile)
+  console.log("ipfsHash", ipfsHash)
 
   return (
     <Base>
@@ -286,7 +251,7 @@ export default function CreateNFT() {
                     <div className="px-4 py-5 bg-white space-y-6 sm:p-6">
                       <div>
                         <label htmlFor="uri" className="block text-sm font-medium text-gray-700">
-                          URI Link
+                          Metadata URI Link
                         </label>
                         <div className="mt-1 flex rounded-md shadow-sm">
                           <input
@@ -306,7 +271,7 @@ export default function CreateNFT() {
                       <div className="font-bold">Your metadata: </div>
                       <div>
                         <Link href={nftURI} legacyBehavior>
-                          <a className="underline text-indigo-600">
+                          <a className="underline text-indigo-600" target={"_blank"}>
                             {nftURI}
                           </a>
                         </Link>
@@ -337,7 +302,7 @@ export default function CreateNFT() {
                       type="button"
                       className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
-                      List
+                      Create
                     </button>
                   </div>
                 </div>
@@ -419,7 +384,7 @@ export default function CreateNFT() {
                                 htmlFor="file-upload"
                                 className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
                               >
-                                {selectedFile ? <span>{selectedFile.name}</span> : <span>Upload a file</span> }
+                                {selectedFile ? <span>{selectedFile.name}</span> : <span>Upload a file</span>}
                                 <input
                                   onChange={uploadHandler}
                                   id="file-upload"
@@ -463,7 +428,7 @@ export default function CreateNFT() {
                       )}
                     </div>
                     <p className="text-sm !mt-2 text-gray-500">
-                      Edit the NFT attributes
+                      Edit the NFT attributes info
                     </p>
                   </div>
                   <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">

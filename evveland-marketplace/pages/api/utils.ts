@@ -2,12 +2,13 @@ import { ethers } from "ethers";
 import { NextApiRequest, NextApiResponse } from "next";
 import { withIronSession, Session } from "next-iron-session";
 import * as util from "ethereumjs-util";
-import EvvelandMarketplace from "../../public/contracts/EvvelandMarketplace.json"
+import EvvelandMarketplace from "../../public/contracts/EvvelandMarketplace.json";
 
 export const contractAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS;
-export const abi = EvvelandMarketplace.abi
+export const abi = EvvelandMarketplace.abi;
 export const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY as string;
-export const pinataSecretApiKey = process.env.NEXT_PUBLIC_PINATA_SECRET_API_KEY as string;
+export const pinataSecretApiKey = process.env
+  .NEXT_PUBLIC_PINATA_SECRET_API_KEY as string;
 
 export function withSession(handler: any) {
   return withIronSession(handler, {
@@ -31,11 +32,7 @@ export const addressCheckMiddleware = async (
   return new Promise(async (resolve, reject) => {
     const message = req.session.get("message-session");
     const provider = new ethers.providers.JsonRpcProvider(url);
-    const contract = new ethers.Contract(
-      contractAddress,
-      abi,
-      provider
-    );
+    const contract = new ethers.Contract(contractAddress, abi, provider);
 
     let nonce: string | Buffer =
       "\x19Ethereum Signed Message:\n" +

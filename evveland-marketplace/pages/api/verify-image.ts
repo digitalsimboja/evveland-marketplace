@@ -1,15 +1,6 @@
-import { v4 as uuidv4 } from "uuid";
-import { Readable } from "stream"
 import { NextApiRequest, NextApiResponse } from "next";
 import { Session } from "next-iron-session";
-import {
-  addressCheckMiddleware,
-  pinataApiKey,
-  pinataSecretApiKey,
-  withSession,
-} from "./utils";
-import FormData from "form-data";
-import axios from "axios";
+import { addressCheckMiddleware, withSession } from "./utils";
 
 export const config = {
   api: {
@@ -24,36 +15,11 @@ export default withSession(
     if (req.method === "POST") {
       const { fileName, contentType } = req.body;
 
-      if ( !fileName || !contentType) {
+      if (!fileName || !contentType) {
         return res.status(422).send({ message: "Image data are missing" });
       }
 
       await addressCheckMiddleware(req, res);
-      // const byte_value = Object.values(bytes);
-      // const buffer = Buffer.from(JSON.stringify(byte_value));
-      // const stream = Readable.from(buffer);
-      
-      // const formData = new FormData();
-
-      // formData.append("file", stream, {
-      //   // contentType,
-      //   // filename: fileName + "-" + uuidv4(),
-      //   filepath: fileName + "-" + uuidv4() +".png",
-      // });
-
-      // const fileRes = await axios.post(
-      //   "https://api.pinata.cloud/pinning/pinFileToIPFS",
-      //   formData,
-      //   {
-      //     maxBodyLength: Infinity,
-      //     headers: {
-      //       "Content-Type": `multipart/form-data; boundary=${formData.getBoundary()}`,
-      //       bodyParser: 4,
-      //       pinata_api_key: pinataApiKey,
-      //       pinata_secret_api_key: pinataSecretApiKey,
-      //     },
-      //   }
-      // );
 
       return res.status(200).send({ message: "Success" });
     } else {

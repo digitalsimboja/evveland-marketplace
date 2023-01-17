@@ -1,3 +1,4 @@
+
 import { ChakraProvider } from "@chakra-ui/react";
 import "@rainbow-me/rainbowkit/styles.css";
 import "../styles/globals.css";
