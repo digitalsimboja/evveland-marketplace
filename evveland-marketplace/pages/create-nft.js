@@ -173,8 +173,8 @@ export default function CreateNFT() {
       );
       tx.wait()
 
-      console.log("Minted: ", tx)
-
+      console.log("Successfully minted: ", tx)
+      
       await toast.promise(
         tx.wait(), {
         pending: "Minting NFT Token",
@@ -208,8 +208,6 @@ export default function CreateNFT() {
       </Base>
     )
   }
-
-  console.log("ipfsHash", ipfsHash)
 
   return (
     <Base>
@@ -302,7 +300,7 @@ export default function CreateNFT() {
                       type="button"
                       className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
-                      Create
+                      Mint Token
                     </button>
                   </div>
                 </div>
