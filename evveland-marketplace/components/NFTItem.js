@@ -11,9 +11,8 @@ function shortifyAddress() {
 }
 
 export default function NFTItem({ item, index }) {
-    console.log('address', contractAddress)
-
     const buyNFT = (tokenId, price) => {
+        console.log('price, price', price)
 
     }
     return (
@@ -54,7 +53,7 @@ export default function NFTItem({ item, index }) {
                                 {item.name}
                             </Box>
                             <Tooltip
-                                label="Add to cart"
+                                label="Ethereum NFT"
                                 bg="white"
                                 placement={'top'}
                                 color={'gray.800'}
@@ -70,11 +69,12 @@ export default function NFTItem({ item, index }) {
                                 <Box as="span" color={'white'} fontSize="lg">
                                     $
                                 </Box>
-                                {item.price}                               
+                                {item.price}
                             </Box>
-                        
-                                <Button>Buy</Button>
-                
+                            <Button
+                            onClick={() => buyNFT(item.tokenId, item.price)}
+                            >Buy</Button>
+
                         </Flex>
                     </Box>
 

@@ -1,0 +1,1 @@
+This is a Next.js project. NFT Marketplace in React, Typescript & Solidity 
