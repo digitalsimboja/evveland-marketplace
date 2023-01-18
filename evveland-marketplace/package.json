@@ -35,6 +35,7 @@
     "next-iron-session": "^4.2.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-icons": "^4.7.1",
     "react-toastify": "^9.1.1",
     "regenerator-runtime": "^0.13.11",
     "uuid": "^9.0.0",

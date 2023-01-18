@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Hero from "../components/Hero";
 import Features from "../components/Features";
-
+import Marketplace from "../components/Marketplace";
 
 export default function Home() {
   return (
@@ -12,6 +12,7 @@ export default function Home() {
         {/* Add the Navbar */}
         <Navbar bg={useColorModeValue("white", "gray.800")} />
         <Hero />
+        <Marketplace  />
         <Features />
         <Footer />
 
