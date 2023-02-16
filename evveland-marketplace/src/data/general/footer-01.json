@@ -7,14 +7,14 @@
                 "alt": "logo"
             }
         ],
-        "text": "Created with the collaboration of over 60 of the world's best Nuron Artists."
+        "text": "Created with the collaboration of over 60 of the world's best Artists."
     },
     "newsletter-widget": {
-        "title": "Get The Latest Nuron Updates",
+        "title": "Get The Latest Evveland Updates",
         "note": "Email is safe. We don't spam."
     },
     "quicklink-widget": {
-        "title": "Nuron",
+        "title": "Evveland",
         "menu": [
             {
                 "id": 1,
@@ -142,5 +142,5 @@
             }
         ]
     },
-    "copyright_text": "©2022 Nuron, Inc. All rights reserved"
+    "copyright_text": "©2023 Evveland, Inc. All rights reserved"
 }
