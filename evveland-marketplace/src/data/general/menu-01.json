@@ -2,8 +2,8 @@
     {
         "id": 1,
         "text": "Home",
-        "path": "/",
-        "submenu": []
+        "path": "/"
+       
     },
     {
         "id": 2,
@@ -16,78 +16,11 @@
         "path": "#!",
         "submenu": [
             {
-                "id": 11,
-                "text": "Explore Filter",
-                "path": "/explore-01"
-            },
-            {
-                "id": 31,
-                "text": "Explore Isotop",
-                "path": "/explore-02"
-            },
-            {
-                "id": 32,
-                "text": "Explore Carousel",
-                "path": "/explore-03"
-            },
-            {
-                "id": 33,
-                "text": "Explore Simple",
-                "path": "/explore-04"
-            },
-            {
-                "id": 34,
-                "text": "Explore Place Bid",
-                "path": "/explore-05"
-            },
-            {
-                "id": 35,
-                "text": "Place Bid With Filter",
-                "path": "/explore-06"
-            },
-            {
-                "id": 36,
-                "text": "Place Bid With Isotop",
-                "path": "/explore-07"
-            },
-            {
-                "id": 37,
-                "text": "Place Bid With Carousel",
-                "path": "/explore-08"
-            },
-            {
-                "id": 38,
-                "text": "Explore Style List",
-                "path": "/explore-09"
-            },
-            {
-                "id": 39,
-                "text": "Explore List Col-Two",
-                "path": "/explore-10"
-            },
-            {
                 "id": 390,
-                "text": "Explore Left Filter",
+                "text": "Explore Collections",
                 "path": "/explore-14"
-            },
-            {
-                "id": 391,
-                "text": "Live Explore",
-                "path": "/explore-11",
-                "isLive": true
-            },
-            {
-                "id": 392,
-                "text": "Live Explore Carousel",
-                "path": "/explore-12",
-                "isLive": true
-            },
-            {
-                "id": 393,
-                "text": "Live With Place Bid",
-                "path": "/explore-13",
-                "isLive": true
             }
+           
         ]
     },
     {
@@ -267,33 +200,9 @@
         "path": "/blog",
         "submenu": [
             {
-                "id": 51,
-                "text": "Blog Single Column",
-                "path": "/blog-single-column",
-                "icon": "feather-fast-forward"
-            },
-            {
-                "id": 52,
-                "text": "Blog Two Column",
-                "path": "/blog-col-two",
-                "icon": "feather-fast-forward"
-            },
-            {
-                "id": 53,
-                "text": "Blog Three Column",
-                "path": "/blog-col-three",
-                "icon": "feather-fast-forward"
-            },
-            {
                 "id": 54,
-                "text": "Blog Four Column",
+                "text": "Marketplace News",
                 "path": "/blog",
-                "icon": "feather-fast-forward"
-            },
-            {
-                "id": 55,
-                "text": "Blog Details",
-                "path": "/blog/blog-9",
                 "icon": "feather-fast-forward"
             }
         ]
