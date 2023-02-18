@@ -45,7 +45,7 @@
                     "title": "Set up your wallet",
                     "path": "/connect",
                     "subtitle": "Step-01",
-                    "description": "Powerful features and inclusions, which makes Nuron standout, easily customizable and scalable.",
+                    "description": "To create and sell NFTs, the first step is to set up a wallet. A wallet is a digital storage space for your NFTs and cryptocurrency. ",
                     "images": [
                         {
                             "src": "/images/icons/shape-7.png"
@@ -57,7 +57,7 @@
                     "title": "Create your collection",
                     "path": "/collection",
                     "subtitle": "Step-02",
-                    "description": "A great collection of beautiful website templates for your need. Choose the best suitable template.",
+                    "description": "Your collection is a group of NFTs that share a common theme or style. Decide what type of NFTs you want to create and what they will represent. ",
                     "images": [
                         {
                             "src": "/images/icons/shape-1.png"
@@ -69,7 +69,7 @@
                     "title": "Add your NFT's",
                     "path": "/connect",
                     "subtitle": "Step-03",
-                    "description": "We've made the template fully responsive, so it looks great on all devices: desktop, tablets and.",
+                    "description": "Add and list your NFTs to the marketplace to be available on the marketplace for purchase. You can customize the fees and other traits. ",
                     "images": [
                         {
                             "src": "/images/icons/shape-5.png"
@@ -81,7 +81,7 @@
                     "title": "Sell Your NFT's",
                     "path": "/creator",
                     "subtitle": "Step-04",
-                    "description": "I throw myself down among the tall grass by the stream as I lie close to the earth NFT's.",
+                    "description": "Promote and sell your NFTs to your audience. You can share unique links for your listed NFTs on your social media handles. ",
                     "images": [
                         {
                             "src": "/images/icons/shape-6.png"
