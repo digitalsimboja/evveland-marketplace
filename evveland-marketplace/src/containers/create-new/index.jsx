@@ -7,12 +7,32 @@ import Button from "@ui/button";
 import ProductModal from "@components/modals/product-modal";
 import ErrorText from "@ui/error-text";
 import { toast } from "react-toastify";
+import axios from "axios";
+import NftMarket from "../../../public/contracts/NftMarket.json";
+
+const ALLOWED_FIELDS = ["name", "description", "image", "attributes"];
+const MARKETPLACE = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS;
+const ABI = NftMarket.abi;
+const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY;
+const pinataSecretApiKey = process.env.NEXT_PUBLIC_PINATA_SECRET_API_KEY;
 
 const CreateNewArea = ({ className, space }) => {
     const [showProductModal, setShowProductModal] = useState(false);
+    const [onSale, setOnSale] = useState(false);
+    const [instantPrice, setInstantPrice] = useState(false);
+    const [unlockedPurchase, setUnlockedPurchase] = useState(false);
+    const [nftURI, setNftURI] = useState("");
+    const [ipfsHash, setIpfsHash] = useState("");
     const [selectedImage, setSelectedImage] = useState();
     const [hasImageError, setHasImageError] = useState(false);
     const [previewData, setPreviewData] = useState({});
+    const [nftMeta, setNftMeta] = useState({
+        name: "",
+        image: "",
+        price: 0,
+        royalty: 0,
+        size: 0,
+    });
 
     const {
         register,
@@ -23,7 +43,7 @@ const CreateNewArea = ({ className, space }) => {
         mode: "onChange",
     });
 
-    const notify = () => toast("Your product has submitted");
+    const notify = () => toast("Your product has been submitted");
     const handleProductModal = () => {
         setShowProductModal(false);
     };
@@ -35,7 +55,127 @@ const CreateNewArea = ({ className, space }) => {
         }
     };
 
-    const onSubmit = (data, e) => {
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setNftMeta({ ...nftMeta, [name]: value });
+    };
+
+    const handleOnSale = (e) => {
+        setOnSale(!onSale);
+    };
+
+    const handleInstantPriceChange = (e) => {
+        setInstantPrice(!instantPrice);
+    };
+
+    const handleUnlockedPurchase = (e) => {
+        setUnlockedPurchase(!unlockedPurchase);
+    };
+
+    // const handleAttributeChange = (e) => {
+    //     const { name, value } = e.target;
+    //     const attributeIdx = nftMeta.attributes.findIndex(
+    //         (attr) => attr.trait_type === name
+    //     );
+
+    //     nftMeta.attributes[attributeIdx].value = value;
+    //     setNftMeta({
+    //         ...nftMeta,
+    //         attributes: nftMeta.attributes,
+    //     });
+    // };
+
+    const getSignedData = async () => {
+        const messageToSign = await axios.get("/api/verify");
+
+        const accounts = await window.ethereum?.request({
+            method: "eth_requestAccounts",
+        });
+        const account = accounts[0];
+
+        const signedData = await window.ethereum?.request({
+            method: "personal_sign",
+            params: [
+                JSON.stringify(messageToSign.data),
+                account,
+                messageToSign.data.id,
+            ],
+        });
+
+        return { signedData, account };
+    };
+
+    const uploadImage = async () => {
+        // upload to IPFS and get the returned hash
+        const formData = new FormData();
+        formData.append("file", selectedImage);
+        const metadata = JSON.stringify({
+            name: selectedImage.name,
+        });
+        formData.append("pinataMetadata", metadata);
+        const options = JSON.stringify({
+            cidVersion: 0,
+        });
+        formData.append("pinataOptions", options);
+
+        try {
+            const { signedData, account } = await getSignedData();
+            const success = await axios.post("/api/verify-image", {
+                address: account,
+                signature: signedData,
+                contentType: selectedImage.type,
+                fileName: selectedImage.name.replace(/\.[^/.]+$/, ""),
+            });
+
+            const res = await axios.post(
+                "https://api.pinata.cloud/pinning/pinFileToIPFS",
+                formData,
+                {
+                    maxBodyLength: "Infinity",
+                    headers: {
+                        "Content-Type": `multipart/form-data; boundary=${formData._boundary}`,
+                        pinata_api_key: pinataApiKey,
+                        pinata_secret_api_key: pinataSecretApiKey,
+                    },
+                }
+            );
+
+            const { data } = res.data;
+            setNftMeta({
+                ...nftMeta,
+                image: `${process.env.NEXT_PUBLIC_PINATA_DOMAIN}/ipfs/${data.IpfsHash}`,
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const uploadMetadata = async () => {
+        const { signedData, account } = await getSignedData();
+
+        try {
+            const promise = axios.post("/api/verify", {
+                address: account,
+                signature: signedData,
+                nft: nftMeta,
+            });
+            const res = await toast.promise(promise, {
+                pending: "Uploading metadata",
+                success: "Metadata uploaded",
+                error: "Metadata upload error",
+            });
+
+            const { data } = res.data;
+            setIpfsHash(data.IpfsHash);
+            setNftURI(
+                `${process.env.NEXT_PUBLIC_PINATA_DOMAIN}/ipfs/${data.IpfsHash}`
+            );
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const onSubmit = async (data, e) => {
         const { target } = e;
         const submitBtn =
             target.localName === "span" ? target.parentElement : target;
@@ -45,12 +185,22 @@ const CreateNewArea = ({ className, space }) => {
             setPreviewData({ ...data, image: selectedImage });
             setShowProductModal(true);
         }
+
         if (!isPreviewBtn) {
+            // Upload image to IPFS
+            await uploadImage();
+
+            // Upload Metadata to ipfs
+            await uploadMetadata();
+
+            // Create the NFT on the smart contract
+
             notify();
             reset();
             setSelectedImage();
         }
     };
+
     return (
         <>
             <div
@@ -116,7 +266,7 @@ const CreateNewArea = ({ className, space }) => {
                                     <h5> Note: </h5>
                                     <span>
                                         {" "}
-                                        Service fee : <strong>2.5%</strong>{" "}
+                                        Service fee : <strong>10%</strong>{" "}
                                     </span>{" "}
                                     <br />
                                     <span>
@@ -139,8 +289,13 @@ const CreateNewArea = ({ className, space }) => {
                                                 </label>
                                                 <input
                                                     id="name"
+                                                    name="name"
+                                                    type="text"
                                                     placeholder="e. g. `Digital Awesome Game`"
                                                     {...register("name", {
+                                                        onChange: (e) => {
+                                                            handleChange(e);
+                                                        },
                                                         required:
                                                             "Name is required",
                                                     })}
@@ -156,20 +311,24 @@ const CreateNewArea = ({ className, space }) => {
                                         <div className="col-md-12">
                                             <div className="input-box pb--20">
                                                 <label
-                                                    htmlFor="Discription"
+                                                    htmlFor="Description"
                                                     className="form-label"
                                                 >
-                                                    Discription
+                                                    Description
                                                 </label>
                                                 <textarea
-                                                    id="discription"
+                                                    id="description"
+                                                    name="description"
                                                     rows="3"
                                                     placeholder="e. g. “After purchasing the product you can get item...”"
                                                     {...register(
-                                                        "discription",
+                                                        "description",
                                                         {
+                                                            onChange: (e) => {
+                                                                handleChange(e);
+                                                            },
                                                             required:
-                                                                "Discription is required",
+                                                                "Description is required",
                                                         }
                                                     )}
                                                 />
@@ -201,6 +360,9 @@ const CreateNewArea = ({ className, space }) => {
                                                             message:
                                                                 "Please enter a number",
                                                         },
+                                                        onChange: (e) => {
+                                                            handleChange(e);
+                                                        },
                                                         required:
                                                             "Price is required",
                                                     })}
@@ -225,6 +387,9 @@ const CreateNewArea = ({ className, space }) => {
                                                     id="size"
                                                     placeholder="e. g. `Size`"
                                                     {...register("size", {
+                                                        onChange: (e) => {
+                                                            handleChange(e);
+                                                        },
                                                         required:
                                                             "Size is required",
                                                     })}
@@ -246,17 +411,20 @@ const CreateNewArea = ({ className, space }) => {
                                                     Properties
                                                 </label>
                                                 <input
-                                                    id="propertiy"
-                                                    placeholder="e. g. `Propertie`"
-                                                    {...register("propertiy", {
+                                                    id="property"
+                                                    placeholder="e. g. `Properties`"
+                                                    {...register("property", {
+                                                        onChange: (e) => {
+                                                            handleChange(e);
+                                                        },
                                                         required:
-                                                            "Propertiy is required",
+                                                            "Property is required",
                                                     })}
                                                 />
-                                                {errors.propertiy && (
+                                                {errors.property && (
                                                     <ErrorText>
                                                         {
-                                                            errors.propertiy
+                                                            errors.property
                                                                 ?.message
                                                         }
                                                     </ErrorText>
@@ -270,20 +438,23 @@ const CreateNewArea = ({ className, space }) => {
                                                     htmlFor="Royality"
                                                     className="form-label"
                                                 >
-                                                    Royality
+                                                    Royalty
                                                 </label>
                                                 <input
-                                                    id="royality"
+                                                    id="royalty"
                                                     placeholder="e. g. `20%`"
-                                                    {...register("royality", {
+                                                    {...register("royalty", {
+                                                        onChange: (e) => {
+                                                            handleChange(e);
+                                                        },
                                                         required:
-                                                            "Royality is required",
+                                                            "Royalty is required",
                                                     })}
                                                 />
-                                                {errors.royality && (
+                                                {errors.royalty && (
                                                     <ErrorText>
                                                         {
-                                                            errors.royality
+                                                            errors.royalty
                                                                 ?.message
                                                         }
                                                     </ErrorText>
@@ -297,6 +468,11 @@ const CreateNewArea = ({ className, space }) => {
                                                     className="rn-check-box-input"
                                                     type="checkbox"
                                                     id="putonsale"
+                                                    {...register("putonsale", {
+                                                        onChange: (e) => {
+                                                            handleOnSale(e);
+                                                        },
+                                                    })}
                                                 />
                                                 <label
                                                     className="rn-check-box-label"
@@ -313,6 +489,16 @@ const CreateNewArea = ({ className, space }) => {
                                                     className="rn-check-box-input"
                                                     type="checkbox"
                                                     id="instantsaleprice"
+                                                    {...register(
+                                                        "instantsaleprice",
+                                                        {
+                                                            onChange: (e) => {
+                                                                handleInstantPriceChange(
+                                                                    e
+                                                                );
+                                                            },
+                                                        }
+                                                    )}
                                                 />
                                                 <label
                                                     className="rn-check-box-label"
@@ -329,6 +515,16 @@ const CreateNewArea = ({ className, space }) => {
                                                     className="rn-check-box-input"
                                                     type="checkbox"
                                                     id="unlockpurchased"
+                                                    {...register(
+                                                        "unlockpurchased",
+                                                        {
+                                                            onChange: (e) => {
+                                                                handleUnlockedPurchase(
+                                                                    e
+                                                                );
+                                                            },
+                                                        }
+                                                    )}
                                                 />
                                                 <label
                                                     className="rn-check-box-label"
@@ -369,7 +565,7 @@ const CreateNewArea = ({ className, space }) => {
                                 <h5> Note: </h5>
                                 <span>
                                     {" "}
-                                    Service fee : <strong>2.5%</strong>{" "}
+                                    Service fee : <strong>10%</strong>{" "}
                                 </span>{" "}
                                 <br />
                                 <span>
