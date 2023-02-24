@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { Session } from "next-iron-session";
+import axios from "axios";
 import {
     withSession,
     contractAddress,
@@ -7,13 +7,12 @@ import {
     pinataApiKey,
     pinataSecretApiKey,
 } from "./utils";
-import axios from "axios";
 
 export default withSession(async (req, res) => {
-    if (req.method == "POST") {
+    if (req.method === "POST") {
         try {
             const { body } = req;
-            const nft = body.nft;
+            const { nft } = body;
 
             if (!nft.name || !nft.description) {
                 return res
@@ -43,7 +42,7 @@ export default withSession(async (req, res) => {
         } catch {
             return res.status(422).send({ message: "Cannot create JSON" });
         }
-    } else if (req.method == "GET") {
+    } else if (req.method === "GET") {
         try {
             const message = { contractAddress, id: uuidv4() };
             req.session.set("message-session", message);

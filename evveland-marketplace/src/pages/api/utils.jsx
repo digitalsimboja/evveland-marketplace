@@ -1,11 +1,10 @@
 import { ethers } from "ethers";
-import { NextApiRequest, NextApiResponse } from "next";
-import { withIronSession, Session } from "next-iron-session";
+import { withIronSession } from "next-iron-session";
 import * as util from "ethereumjs-util";
 import NftMarket from "../../../public/contracts/NftMarket.json";
 
 export const contractAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS;
-export const abi = NftMarket.abi;
+export const { abi } = NftMarket;
 export const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY;
 export const pinataSecretApiKey = process.env.NEXT_PUBLIC_PINATA_SECRET_API_KEY;
 
@@ -15,7 +14,7 @@ export function withSession(handler) {
         cookieName: "nft-auth-session",
         cookieOptions: {
             maxAge: 60 * 60 * 24 * 30, // 30 days
-            secure: process.env.NODE_ENV === "production" ? true : false,
+            secure: true,
         },
     });
 }
@@ -25,15 +24,16 @@ const url =
         ? process.env.NEXT_PUBLIC_QUICKNODE_HTTP_URL
         : "http://127.0.0.1:3000";
 
-export const addressCheckMiddleware = async (req, res) => {
-    return new Promise(async (resolve, reject) => {
+export const addressCheckMiddleware = async (req, res) =>
+    new Promise((resolve, reject) => {
         const message = req.session.get("message-session");
 
         const provider = new ethers.JsonRpcProvider(url);
         const contract = new ethers.Contract(contractAddress, abi, provider);
 
+        const ethMessage = "\x19Ethereum Signed Message:\n";
         let nonce =
-            "\x19Ethereum Signed Message:\n" +
+            ethMessage +
             JSON.stringify(message).length +
             JSON.stringify(message);
 
@@ -44,9 +44,8 @@ export const addressCheckMiddleware = async (req, res) => {
         const address = util.bufferToHex(addrBuffer);
 
         if (address === req.body.address.toLowerCase()) {
-            resolve("Correct Address");
+            resolve("Correct address");
         } else {
-            reject("Wrong Address");
+            reject(new Error("Promise rejected due to wrong address"));
         }
     });
-};

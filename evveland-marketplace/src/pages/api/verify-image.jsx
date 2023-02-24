@@ -1,5 +1,3 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { Session } from "next-iron-session";
 import { addressCheckMiddleware, withSession } from "./utils";
 
 export const config = {
@@ -21,7 +19,6 @@ export default withSession(async (req, res) => {
         await addressCheckMiddleware(req, res);
 
         return res.status(200).send({ message: "Success" });
-    } else {
-        return res.status(422).send({ message: "Invalid endpoint" });
     }
+    return res.status(422).send({ message: "Invalid endpoint" });
 });

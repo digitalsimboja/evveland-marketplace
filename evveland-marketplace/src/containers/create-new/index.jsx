@@ -120,7 +120,7 @@ const CreateNewArea = ({ className, space }) => {
 
         try {
             const { signedData, account } = await getSignedData();
-            const success = await axios.post("/api/verify-image", {
+            const _ = await axios.post("/api/verify-image", {
                 address: account,
                 signature: signedData,
                 contentType: selectedImage.type,
@@ -140,7 +140,8 @@ const CreateNewArea = ({ className, space }) => {
                 }
             );
 
-            const { data } = res.data;
+            const { data } = res;
+
             setNftMeta({
                 ...nftMeta,
                 image: `${process.env.NEXT_PUBLIC_PINATA_DOMAIN}/ipfs/${data.IpfsHash}`,
