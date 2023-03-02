@@ -1,5 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 import { useState } from "react";
+import { useRouter } from "next/router";
+import { ethers } from "ethers";
+
 import PropTypes from "prop-types";
 import clsx from "clsx";
 import { useForm } from "react-hook-form";
@@ -12,11 +15,13 @@ import NftMarket from "../../../public/contracts/NftMarket.json";
 
 const ALLOWED_FIELDS = ["name", "description", "image", "attributes"];
 const MARKETPLACE = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS;
-const ABI = NftMarket.abi;
+const ABI = NftMarket;
 const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY;
 const pinataSecretApiKey = process.env.NEXT_PUBLIC_PINATA_SECRET_API_KEY;
+const listingPrice = 0.025;
 
 const CreateNewArea = ({ className, space }) => {
+    const router = useRouter();
     const [showProductModal, setShowProductModal] = useState(false);
     const [onSale, setOnSale] = useState(false);
     const [instantPrice, setInstantPrice] = useState(false);
@@ -44,6 +49,7 @@ const CreateNewArea = ({ className, space }) => {
     });
 
     const notify = () => toast("Your product has been submitted");
+    const notifyImageUpload = () => toast("Uploading image");
     const handleProductModal = () => {
         setShowProductModal(false);
     };
@@ -127,6 +133,8 @@ const CreateNewArea = ({ className, space }) => {
                 fileName: selectedImage.name.replace(/\.[^/.]+$/, ""),
             });
 
+            notifyImageUpload();
+
             const res = await axios.post(
                 "https://api.pinata.cloud/pinning/pinFileToIPFS",
                 formData,
@@ -141,7 +149,6 @@ const CreateNewArea = ({ className, space }) => {
             );
 
             const { data } = res;
-
             setNftMeta({
                 ...nftMeta,
                 image: `${process.env.NEXT_PUBLIC_PINATA_DOMAIN}/ipfs/${data.IpfsHash}`,
@@ -166,13 +173,59 @@ const CreateNewArea = ({ className, space }) => {
                 error: "Metadata upload error",
             });
 
-            const { data } = res.data;
+            const { data } = res;
+
             setIpfsHash(data.IpfsHash);
+
             setNftURI(
                 `${process.env.NEXT_PUBLIC_PINATA_DOMAIN}/ipfs/${data.IpfsHash}`
             );
         } catch (error) {
             console.error(error);
+        }
+    };
+
+    const createNft = async () => {
+       
+        try {
+
+            const accounts = await window.ethereum?.request({
+                method: "eth_requestAccounts",
+            });
+            const account = accounts[0];
+
+            const provider = new ethers.JsonRpcProvider(window.ethereum);
+
+            const signer = provider.getSigner(account);
+
+            const contract = new ethers.Contract(MARKETPLACE, ABI, signer);
+            console.log(contract)
+
+            // const tx = await contract.createMarketItem(
+            //     nftURI,
+            //     ethers.utils.parseEther(nftMeta.price),
+            //     {
+            //         value: ethers.utils.parseEther(listingPrice.toString()),
+            //     }
+            // );
+            // tx.wait();
+
+            // console.log("Successfully minted: ", tx);
+
+            // await toast.promise(tx.wait(), {
+            //     pending: "Minting NFT Token",
+            //     success: "NFT has been created and listed",
+            //     error: "Minting error",
+            // });
+
+            reset();
+            setSelectedImage();
+
+            router.push({
+                pathname: "/",
+            });
+        } catch (e) {
+            console.log(e.message);
         }
     };
 
@@ -194,11 +247,7 @@ const CreateNewArea = ({ className, space }) => {
             // Upload Metadata to ipfs
             await uploadMetadata();
 
-            // Create the NFT on the smart contract
-
             notify();
-            reset();
-            setSelectedImage();
         }
     };
 
@@ -258,6 +307,7 @@ const CreateNewArea = ({ className, space }) => {
                                             </p>
                                         </label>
                                     </div>
+
                                     {hasImageError && !selectedImage && (
                                         <ErrorText>Image is required</ErrorText>
                                     )}
@@ -554,9 +604,22 @@ const CreateNewArea = ({ className, space }) => {
 
                                         <div className="col-md-12 col-xl-8 mt_lg--15 mt_md--15 mt_sm--15">
                                             <div className="input-box">
-                                                <Button type="submit" fullwidth>
-                                                    Submit Item
-                                                </Button>
+                                                {nftURI ? (
+                                                    <Button
+                                                        onClick={createNft}
+                                                        type="button"
+                                                        fullwidth
+                                                    >
+                                                        Create NFT
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        type="submit"
+                                                        fullwidth
+                                                    >
+                                                        Submit Item
+                                                    </Button>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
