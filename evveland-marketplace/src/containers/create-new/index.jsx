@@ -15,10 +15,12 @@ import NftMarket from "../../../public/contracts/NftMarket.json";
 
 const ALLOWED_FIELDS = ["name", "description", "image", "attributes"];
 const MARKETPLACE = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS;
-const ABI = NftMarket;
+const ABI = NftMarket.abi;
 const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY;
 const pinataSecretApiKey = process.env.NEXT_PUBLIC_PINATA_SECRET_API_KEY;
 const listingPrice = 0.025;
+
+const url = process.env.NEXT_PUBLIC_QUICKNODE_HTTP_URL;
 
 const CreateNewArea = ({ className, space }) => {
     const router = useRouter();
@@ -27,6 +29,7 @@ const CreateNewArea = ({ className, space }) => {
     const [instantPrice, setInstantPrice] = useState(false);
     const [unlockedPurchase, setUnlockedPurchase] = useState(false);
     const [nftURI, setNftURI] = useState("");
+    const [connectedAddress, setConnectedAddress] = useState("");
     const [ipfsHash, setIpfsHash] = useState("");
     const [selectedImage, setSelectedImage] = useState();
     const [hasImageError, setHasImageError] = useState(false);
@@ -50,6 +53,7 @@ const CreateNewArea = ({ className, space }) => {
 
     const notify = () => toast("Your product has been submitted");
     const notifyImageUpload = () => toast("Uploading image");
+    const notifyMint = () => toast("Minting a new NFT");
     const handleProductModal = () => {
         setShowProductModal(false);
     };
@@ -98,6 +102,7 @@ const CreateNewArea = ({ className, space }) => {
             method: "eth_requestAccounts",
         });
         const account = accounts[0];
+        setConnectedAddress(account);
 
         const signedData = await window.ethereum?.request({
             method: "personal_sign",
@@ -186,37 +191,27 @@ const CreateNewArea = ({ className, space }) => {
     };
 
     const createNft = async () => {
-       
         try {
-
-            const accounts = await window.ethereum?.request({
-                method: "eth_requestAccounts",
-            });
-            const account = accounts[0];
-
-            const provider = new ethers.JsonRpcProvider(window.ethereum);
-
-            const signer = provider.getSigner(account);
-
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner(connectedAddress);
             const contract = new ethers.Contract(MARKETPLACE, ABI, signer);
-            console.log(contract)
 
-            // const tx = await contract.createMarketItem(
-            //     nftURI,
-            //     ethers.utils.parseEther(nftMeta.price),
-            //     {
-            //         value: ethers.utils.parseEther(listingPrice.toString()),
-            //     }
-            // );
-            // tx.wait();
+            const tx = await contract.createMarketItem(
+                nftURI,
+                ethers.utils.parseEther(nftMeta.price),
+                {
+                    value: ethers.utils.parseEther(listingPrice.toString()),
+                }
+            );
+            tx.wait();
 
-            // console.log("Successfully minted: ", tx);
+            console.log("Successfully minted: ", tx);
 
-            // await toast.promise(tx.wait(), {
-            //     pending: "Minting NFT Token",
-            //     success: "NFT has been created and listed",
-            //     error: "Minting error",
-            // });
+            await toast.promise(tx.wait(), {
+                pending: "Minting NFT Token",
+                success: "NFT has been created and listed",
+                error: "Minting error",
+            });
 
             reset();
             setSelectedImage();
@@ -225,7 +220,8 @@ const CreateNewArea = ({ className, space }) => {
                 pathname: "/",
             });
         } catch (e) {
-            console.log(e.message);
+            console.log(e);
+            throw new Error(e);
         }
     };
 

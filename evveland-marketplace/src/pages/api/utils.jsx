@@ -28,7 +28,7 @@ export const addressCheckMiddleware = async (req, res) =>
     new Promise((resolve, reject) => {
         const message = req.session.get("message-session");
 
-        const provider = new ethers.JsonRpcProvider(url);
+        const provider = new ethers.providers.JsonRpcProvider(url);
         const contract = new ethers.Contract(contractAddress, abi, provider);
 
         const ethMessage = "\x19Ethereum Signed Message:\n";
