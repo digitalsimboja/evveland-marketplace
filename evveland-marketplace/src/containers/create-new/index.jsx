@@ -13,14 +13,11 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import NftMarket from "../../../public/contracts/NftMarket.json";
 
-const ALLOWED_FIELDS = ["name", "description", "image", "attributes"];
 const MARKETPLACE = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS;
 const ABI = NftMarket.abi;
 const pinataApiKey = process.env.NEXT_PUBLIC_PINATA_API_KEY;
 const pinataSecretApiKey = process.env.NEXT_PUBLIC_PINATA_SECRET_API_KEY;
 const listingPrice = 0.025;
-
-const url = process.env.NEXT_PUBLIC_QUICKNODE_HTTP_URL;
 
 const CreateNewArea = ({ className, space }) => {
     const router = useRouter();
@@ -204,9 +201,7 @@ const CreateNewArea = ({ className, space }) => {
                 }
             );
             tx.wait();
-
-            console.log("Successfully minted: ", tx);
-
+          
             await toast.promise(tx.wait(), {
                 pending: "Minting NFT Token",
                 success: "NFT has been created and listed",
@@ -303,7 +298,7 @@ const CreateNewArea = ({ className, space }) => {
                                             </p>
                                         </label>
                                     </div>
-
+                                    
                                     {hasImageError && !selectedImage && (
                                         <ErrorText>Image is required</ErrorText>
                                     )}

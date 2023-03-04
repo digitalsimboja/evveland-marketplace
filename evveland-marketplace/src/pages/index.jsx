@@ -22,6 +22,8 @@ export async function getStaticProps() {
 }
 
 const Home = () => {
+    // load homepage data from the blockchain
+    
     const content = normalizedData(homepageData?.content || []);
     const liveAuctionData = productData.filter(
         (prod) =>
@@ -37,7 +39,7 @@ const Home = () => {
 
     return (
         <Wrapper>
-            <SEO pageTitle="Home Default" />
+            <SEO pageTitle="Evveland Marketplace" />
             <Header />
             <main id="main-content">
                 <HeroArea data={content["hero-section"]} />

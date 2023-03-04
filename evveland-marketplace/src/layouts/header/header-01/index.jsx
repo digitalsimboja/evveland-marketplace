@@ -3,6 +3,7 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 import clsx from "clsx";
 import Web3 from "web3";
+import { ConnectButton, wallet } from "@rainbow-me/rainbowkit";
 import Logo from "@components/logo";
 import MainMenu from "@components/menu/main-menu";
 import MobileMenu from "@components/menu/mobile-menu";
@@ -37,6 +38,10 @@ const Header = ({ className }) => {
         }
         return provider;
     };
+
+    const buyEvve = async () => {
+        console.log("Buy evve with Wert")
+    }
 
     const onConnect = async () => {
         try {
@@ -84,9 +89,20 @@ const Header = ({ className }) => {
                             </div>
                         </div>
                         <div className="header-right">
+                            <div className="icon-box">
+                                <Button
+                                    color="primary-alta"
+                                    className="connectBtn"
+                                    size="small"
+                                    onClick={buyEvve}
+                                >
+                                    Buy EVVE
+                                </Button>
+                            </div>
                             <div className="setting-option d-none d-lg-block">
                                 <SearchForm />
                             </div>
+
                             <div className="setting-option rn-icon-list d-block d-lg-none">
                                 <div className="icon-box search-mobile-icon">
                                     <button
@@ -102,14 +118,15 @@ const Header = ({ className }) => {
                             {!isAuthenticated && (
                                 <div className="setting-option header-btn">
                                     <div className="icon-box">
-                                        <Button
+                                        {/* <Button
                                             color="primary-alta"
                                             className="connectBtn"
                                             size="small"
                                             onClick={onConnect}
                                         >
                                             Wallet connect
-                                        </Button>
+                                        </Button> */}
+                                        <ConnectButton />
                                     </div>
                                 </div>
                             )}

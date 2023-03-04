@@ -1,0 +1,41 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: EvvelandMarketplace
+    network: mumbai
+    source:
+      address: "0x2C7203D0d1c983E843d366acc5A8d0A521eD945A"
+      abi: EvvelandMarketplace
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Approval
+        - ApprovalForAll
+        - MarketItemCreated
+        - MarketItemListed
+        - MarketItemPurchased
+        - OwnershipTransferred
+        - Transfer
+      abis:
+        - name: EvvelandMarketplace
+          file: ./abis/EvvelandMarketplace.json
+      eventHandlers:
+        - event: Approval(indexed address,indexed address,indexed uint256)
+          handler: handleApproval
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalForAll
+        - event: MarketItemCreated(indexed uint256,uint256,address,bool)
+          handler: handleMarketItemCreated
+        - event: MarketItemListed(indexed uint256,uint256,address,bool)
+          handler: handleMarketItemListed
+        - event: MarketItemPurchased(indexed uint256,uint256,address,bool)
+          handler: handleMarketItemPurchased
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/evveland-marketplace.ts
