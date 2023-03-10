@@ -40,8 +40,8 @@ const Header = ({ className }) => {
     };
 
     const buyEvve = async () => {
-        console.log("Buy evve with Wert")
-    }
+        console.log("Buy evve with Wert");
+    };
 
     const onConnect = async () => {
         try {

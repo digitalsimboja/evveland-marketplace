@@ -201,7 +201,7 @@ const CreateNewArea = ({ className, space }) => {
                 }
             );
             tx.wait();
-          
+
             await toast.promise(tx.wait(), {
                 pending: "Minting NFT Token",
                 success: "NFT has been created and listed",
@@ -298,7 +298,7 @@ const CreateNewArea = ({ className, space }) => {
                                             </p>
                                         </label>
                                     </div>
-                                    
+
                                     {hasImageError && !selectedImage && (
                                         <ErrorText>Image is required</ErrorText>
                                     )}

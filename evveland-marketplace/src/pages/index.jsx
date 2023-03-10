@@ -23,7 +23,7 @@ export async function getStaticProps() {
 
 const Home = () => {
     // load homepage data from the blockchain
-    
+
     const content = normalizedData(homepageData?.content || []);
     const liveAuctionData = productData.filter(
         (prod) =>

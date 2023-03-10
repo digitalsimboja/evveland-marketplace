@@ -43,7 +43,6 @@ const { chains, provider } = configureChains(
                     throw new Error(
                         "Error! Switch your network to Polygon Mumbai Testnet"
                     );
-                    return null;
                 }
                 return { http: chain.rpcUrls.default };
             },
@@ -77,9 +76,9 @@ const MyApp = ({ Component, pageProps }) => {
     return (
         <ThemeProvider defaultTheme="dark">
             <WagmiConfig client={wagmiClient}>
-          <RainbowKitProvider chains={chains}>
-            <Component {...pageProps} />
-            </RainbowKitProvider>
+                <RainbowKitProvider chains={chains}>
+                    <Component {...pageProps} />
+                </RainbowKitProvider>
             </WagmiConfig>
         </ThemeProvider>
     );
